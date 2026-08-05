@@ -1,0 +1,25 @@
+fastapi
+uvicorn
+sqlalchemy
+python-jose
+passlib[bcrypt]
+# passlib 1.7.4 breaks on bcrypt>=4.1 (reads a removed __about__ attribute); pin below it.
+bcrypt<4.1
+email-validator
+langchain
+langchain-community
+langchain-classic
+langchain-text-splitters
+langchain-groq
+langchain-huggingface
+rank_bm25
+faiss-cpu
+sentence-transformers
+python-multipart
+python-dotenv
+cryptography
+psycopg2-binary
+PyMySQL
+pypdf
+python-docx
+unstructured
