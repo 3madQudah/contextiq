@@ -1,0 +1,9 @@
+New Hire Onboarding Checklist
+
+All new hires are enrolled in the buddy-pairing protocol, where an existing team member is assigned as a buddy for the new hire's first 9 business days.
+
+IT provisioning (laptop, badge, VPN credentials) must be completed within 2 business days of the offer acceptance date.
+
+New hires must complete the security awareness training module within the first 9 business days, matching the buddy-pairing period.
+
+Managers must schedule a 30-day check-in and a 90-day performance review.

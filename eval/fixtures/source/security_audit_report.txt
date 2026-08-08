@@ -1,0 +1,11 @@
+Nimbus Sync -- External Security Audit Report
+
+Auditor: Redshift Security Labs. Audit period: 2025-08-01 to 2025-08-21.
+
+Findings: 2 critical, 5 high, 11 medium, 19 low severity issues identified.
+
+Critical finding NS-2025-01 describes a TOCTOU race condition in the file-locking subsystem that could allow a local attacker to bypass the conflict resolution check between the permission validation step and the file write.
+
+Critical finding NS-2025-02 corresponds to CVE-2025-41217, the path traversal vulnerability in the desktop sync agent later fixed in release 3.4.2.
+
+The report recommends remediation of all critical and high findings within 30 days.

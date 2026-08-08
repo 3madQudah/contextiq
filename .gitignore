@@ -4,13 +4,24 @@ __pycache__/
 .venv/
 venv/
 *.egg-info/
+.pytest_cache/
 
 # --- Env ---
 .env
+.env.local
+.env.*.local
+
+# --- Secrets (defense in depth -- nothing here should exist, but if it
+# does, never let it get committed by accident) ---
+*.pem
+*.key
 
 # --- Database ---
 *.db
 *.sqlite3
+
+# --- Logs ---
+*.log
 
 # --- Vector store / data ---
 backend/data/raw/*
@@ -27,3 +38,6 @@ frontend/.env
 .vscode/
 .idea/
 .DS_Store
+
+# --- Claude Code tooling (local/machine-specific, not app config) ---
+.claude/

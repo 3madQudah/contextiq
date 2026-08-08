@@ -18,8 +18,9 @@ from langchain_groq import ChatGroq
 
 from chain.hybrid_retriever import get_hybrid_retriever
 from chain.metadata_filter import filter_documents
-from chain.prompt_templates import RAG_PROMPT_TEMPLATE
 from chain.query_rewriter import format_history, rewrite_query
+from prompt_eng import PROMPT_REGISTRY
+from prompt_eng.base_prompt import DEFAULT_PROMPT_TEMPLATE
 
 load_dotenv()
 
@@ -30,6 +31,30 @@ GROQ_MODEL_NAME = os.getenv("GROQ_MODEL_NAME", "llama-3.1-8b-instant")
 
 FETCH_K = 8
 TOP_K = 4
+
+
+def _format_chunk_header(chunk) -> str:
+    """[Source: file] normally, plus a Section: label when the chunk carries
+    section_heading metadata (DOCX and MD chunks -- see
+    loaders/document_loader.py's load_docx_by_section/load_md_by_section --
+    so this is a no-op for PDF/TXT/CSV chunks, which simply lack the key)."""
+    parts = [f"Source: {chunk.metadata.get('file_name', 'unknown')}"]
+    section_heading = chunk.metadata.get("section_heading")
+    if section_heading:
+        parts.append(f"Section: {section_heading}")
+    return "[" + " | ".join(parts) + "]"
+
+
+def _select_prompt_template(chunks):
+    """Pick the file-type-tailored prompt when every retrieved chunk agrees on
+    one type (e.g. a file_type filter is active, or the user's index happens
+    to be single-type); fall back to the generic prompt when types are mixed
+    or unrecognized, since no single type's tailoring would fit."""
+    chunk_types = {chunk.metadata.get("file_type") for chunk in chunks}
+    if len(chunk_types) == 1:
+        (only_type,) = chunk_types
+        return PROMPT_REGISTRY.get(only_type, DEFAULT_PROMPT_TEMPLATE)
+    return DEFAULT_PROMPT_TEMPLATE
 
 
 def run_rag_chain(
@@ -73,10 +98,10 @@ def run_rag_chain(
         }
 
     context = "\n\n".join(
-        f"[Source: {chunk.metadata.get('file_name', 'unknown')}]\n{chunk.page_content}"
-        for chunk in relevant_chunks
+        f"{_format_chunk_header(chunk)}\n{chunk.page_content}" for chunk in relevant_chunks
     )
-    prompt = RAG_PROMPT_TEMPLATE.format(
+    prompt_template = _select_prompt_template(relevant_chunks)
+    prompt = prompt_template.format(
         history=format_history(history) if history else "(none)",
         context=context,
         question=question,

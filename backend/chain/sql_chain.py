@@ -35,7 +35,7 @@ from sqlalchemy.engine import make_url
 from sqlalchemy.exc import OperationalError
 
 from auth.db_connection_models import DatabaseConnection
-from chain.prompt_templates import SQL_ANSWER_PROMPT_TEMPLATE, SQL_GENERATION_PROMPT_TEMPLATE
+from prompt_eng.sql_prompt import SQL_ANSWER_PROMPT_TEMPLATE, SQL_PROMPT_TEMPLATE
 from utils.crypto import decrypt_connection_string
 
 load_dotenv()
@@ -175,7 +175,7 @@ def _extract_sql(raw_text: str) -> str:
 
 def generate_sql(db_type: str, schema_text: str, question: str) -> str:
     llm = ChatGroq(api_key=GROQ_API_KEY, model=GROQ_MODEL_NAME, temperature=0)
-    prompt = SQL_GENERATION_PROMPT_TEMPLATE.format(
+    prompt = SQL_PROMPT_TEMPLATE.format(
         db_type=db_type, schema=schema_text, question=question
     )
     response = llm.invoke(prompt)

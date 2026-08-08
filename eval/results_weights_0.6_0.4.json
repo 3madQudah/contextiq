@@ -1,0 +1,1753 @@
+{
+  "configs": {
+    "FAISS-only": {
+      "per_question": [
+        {
+          "id": "q01",
+          "question": "What uptime SLA does Nimbus Sync guarantee?",
+          "file_type": "txt",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "product_faq.txt::0"
+          ],
+          "retrieved_chunk_ids": [
+            "product_faq.txt::0",
+            "release_notes.txt::0",
+            "api_reference.md::0",
+            "security_audit_report.pdf::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 10.213040979579091
+        },
+        {
+          "id": "q02",
+          "question": "What conflict resolution technique does Nimbus Sync use to merge concurrent edits from multiple devices?",
+          "file_type": "txt",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "product_faq.txt::0"
+          ],
+          "retrieved_chunk_ids": [
+            "release_notes.txt::0",
+            "product_faq.txt::0",
+            "security_audit_report.pdf::0",
+            "api_reference.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 0.5,
+          "average_precision": 0.5,
+          "latency_ms": 47.964624827727675
+        },
+        {
+          "id": "q03",
+          "question": "How much does the Nimbus Sync Pro plan cost per month?",
+          "file_type": "txt",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "product_faq.txt::0"
+          ],
+          "retrieved_chunk_ids": [
+            "product_faq.txt::0",
+            "board_meeting_minutes.pdf::0",
+            "api_reference.md::0",
+            "quarterly_sales.csv::2"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 51.117417169734836
+        },
+        {
+          "id": "q04",
+          "question": "Which CVE was fixed in Nimbus Sync version 3.4.2?",
+          "file_type": "txt",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "release_notes.txt::0"
+          ],
+          "retrieved_chunk_ids": [
+            "release_notes.txt::0",
+            "security_audit_report.pdf::0",
+            "product_faq.txt::0",
+            "deployment_guide.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 43.61675004474819
+        },
+        {
+          "id": "q05",
+          "question": "By what percentage did sync latency improve in version 3.4.2?",
+          "file_type": "txt",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "release_notes.txt::0"
+          ],
+          "retrieved_chunk_ids": [
+            "release_notes.txt::0",
+            "security_audit_report.pdf::1",
+            "security_audit_report.pdf::0",
+            "product_faq.txt::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 38.83529198355973
+        },
+        {
+          "id": "q06",
+          "question": "What was the maximum number of linked devices per account before it was increased in version 3.4.1?",
+          "file_type": "txt",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "release_notes.txt::0"
+          ],
+          "retrieved_chunk_ids": [
+            "release_notes.txt::0",
+            "api_reference.md::0",
+            "board_meeting_minutes.pdf::0",
+            "product_faq.txt::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 97.63887501321733
+        },
+        {
+          "id": "q07",
+          "question": "What --max-replicas value is recommended for the sync-worker autoscaler?",
+          "file_type": "md",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "deployment_guide.md::0"
+          ],
+          "retrieved_chunk_ids": [
+            "deployment_guide.md::0",
+            "release_notes.txt::0",
+            "api_reference.md::0",
+            "product_faq.txt::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 13.248125091195107
+        },
+        {
+          "id": "q08",
+          "question": "What tool is used for canary rollouts of Nimbus Sync in production?",
+          "file_type": "md",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "deployment_guide.md::0"
+          ],
+          "retrieved_chunk_ids": [
+            "deployment_guide.md::0",
+            "product_faq.txt::0",
+            "release_notes.txt::0",
+            "security_audit_report.pdf::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 13.157500186935067
+        },
+        {
+          "id": "q09",
+          "question": "What Helm chart version is currently pinned for the Kubernetes deployment?",
+          "file_type": "md",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "deployment_guide.md::0"
+          ],
+          "retrieved_chunk_ids": [
+            "deployment_guide.md::0",
+            "security_audit_report.pdf::0",
+            "board_meeting_minutes.pdf::0",
+            "quarterly_sales.csv::1"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 44.658750062808394
+        },
+        {
+          "id": "q10",
+          "question": "What is the Nimbus Sync API's rate limit per API key?",
+          "file_type": "md",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "api_reference.md::0"
+          ],
+          "retrieved_chunk_ids": [
+            "api_reference.md::0",
+            "product_faq.txt::0",
+            "release_notes.txt::0",
+            "deployment_guide.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 11.767541989684105
+        },
+        {
+          "id": "q11",
+          "question": "What error code is returned when the Nimbus Sync API rate limit is exceeded?",
+          "file_type": "md",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "api_reference.md::0"
+          ],
+          "retrieved_chunk_ids": [
+            "api_reference.md::0",
+            "release_notes.txt::0",
+            "product_faq.txt::0",
+            "security_audit_report.pdf::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 10.686000110581517
+        },
+        {
+          "id": "q12",
+          "question": "How long are Nimbus Sync API bearer tokens valid before they expire?",
+          "file_type": "md",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "api_reference.md::0"
+          ],
+          "retrieved_chunk_ids": [
+            "api_reference.md::0",
+            "product_faq.txt::0",
+            "release_notes.txt::0",
+            "security_audit_report.pdf::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 10.918708983808756
+        },
+        {
+          "id": "q13",
+          "question": "What was the NA region's Q3 revenue for NimbusPro?",
+          "file_type": "csv",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "quarterly_sales.csv::2"
+          ],
+          "retrieved_chunk_ids": [
+            "quarterly_sales.csv::2",
+            "quarterly_sales.csv::1",
+            "quarterly_sales.csv::0",
+            "quarterly_sales.csv::3"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 10.720333084464073
+        },
+        {
+          "id": "q14",
+          "question": "What was APAC's Q1 revenue for NimbusLite?",
+          "file_type": "csv",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "quarterly_sales.csv::3"
+          ],
+          "retrieved_chunk_ids": [
+            "quarterly_sales.csv::3",
+            "quarterly_sales.csv::0",
+            "quarterly_sales.csv::2",
+            "quarterly_sales.csv::1"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 12.153874849900603
+        },
+        {
+          "id": "q15",
+          "question": "What was EMEA's Q4 revenue for NimbusPro?",
+          "file_type": "csv",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "quarterly_sales.csv::1"
+          ],
+          "retrieved_chunk_ids": [
+            "quarterly_sales.csv::1",
+            "quarterly_sales.csv::0",
+            "quarterly_sales.csv::2",
+            "quarterly_sales.csv::3"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 11.9527499191463
+        },
+        {
+          "id": "q16",
+          "question": "What department does Fatima Al-Sayed work in?",
+          "file_type": "csv",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "employee_roster.csv::2"
+          ],
+          "retrieved_chunk_ids": [
+            "employee_roster.csv::2",
+            "employee_roster.csv::3",
+            "employee_roster.csv::0",
+            "employee_roster.csv::1"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 46.492791967466474
+        },
+        {
+          "id": "q17",
+          "question": "What is Tomasz Wozniak's salary?",
+          "file_type": "csv",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "employee_roster.csv::1"
+          ],
+          "retrieved_chunk_ids": [
+            "employee_roster.csv::1",
+            "employee_roster.csv::0",
+            "employee_roster.csv::2",
+            "employee_roster.csv::3"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 10.592458071187139
+        },
+        {
+          "id": "q18",
+          "question": "When was Priya Chandrasekaran hired?",
+          "file_type": "csv",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "employee_roster.csv::0"
+          ],
+          "retrieved_chunk_ids": [
+            "employee_roster.csv::0",
+            "employee_roster.csv::2",
+            "employee_roster.csv::1",
+            "employee_roster.csv::3"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 45.3700830694288
+        },
+        {
+          "id": "q19",
+          "question": "What budget did the board approve for the Nimbus Sync infrastructure expansion?",
+          "file_type": "pdf",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "board_meeting_minutes.pdf::0"
+          ],
+          "retrieved_chunk_ids": [
+            "product_faq.txt::0",
+            "board_meeting_minutes.pdf::0",
+            "release_notes.txt::0",
+            "api_reference.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 0.5,
+          "average_precision": 0.5,
+          "latency_ms": 12.970458017662168
+        },
+        {
+          "id": "q20",
+          "question": "How many of the board's 9 members were present at the 2025-10-14 meeting, and what clause did that invoke?",
+          "file_type": "pdf",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "board_meeting_minutes.pdf::0"
+          ],
+          "retrieved_chunk_ids": [
+            "board_meeting_minutes.pdf::0",
+            "quarterly_sales.csv::1",
+            "quarterly_sales.csv::0",
+            "quarterly_sales.csv::2"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 44.814875116571784
+        },
+        {
+          "id": "q21",
+          "question": "How many critical severity findings did the security audit identify?",
+          "file_type": "pdf",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "security_audit_report.pdf::0"
+          ],
+          "retrieved_chunk_ids": [
+            "security_audit_report.pdf::0",
+            "board_meeting_minutes.pdf::0",
+            "onboarding_checklist.docx::0",
+            "employee_roster.csv::2"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 11.687458958476782
+        },
+        {
+          "id": "q22",
+          "question": "What kind of race condition was found in the file-locking subsystem?",
+          "file_type": "pdf",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "security_audit_report.pdf::0"
+          ],
+          "retrieved_chunk_ids": [
+            "security_audit_report.pdf::0",
+            "release_notes.txt::0",
+            "security_audit_report.pdf::1",
+            "deployment_guide.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 10.892249876633286
+        },
+        {
+          "id": "q23",
+          "question": "Which CVE does critical finding NS-2025-02 correspond to?",
+          "file_type": "pdf",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "security_audit_report.pdf::0"
+          ],
+          "retrieved_chunk_ids": [
+            "security_audit_report.pdf::0",
+            "employee_roster.csv::0",
+            "release_notes.txt::0",
+            "quarterly_sales.csv::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 12.805042089894414
+        },
+        {
+          "id": "q24",
+          "question": "Within how many days does the security audit recommend remediating critical and high findings?",
+          "file_type": "pdf",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "security_audit_report.pdf::1"
+          ],
+          "retrieved_chunk_ids": [
+            "security_audit_report.pdf::1",
+            "onboarding_checklist.docx::0",
+            "security_audit_report.pdf::0",
+            "deployment_guide.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 11.302417144179344
+        },
+        {
+          "id": "q25",
+          "question": "What form must an employee file if they work remotely for more than 14 consecutive days?",
+          "file_type": "docx",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "employee_handbook.docx::0"
+          ],
+          "retrieved_chunk_ids": [
+            "employee_handbook.docx::0",
+            "onboarding_checklist.docx::0",
+            "product_faq.txt::0",
+            "api_reference.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 11.23504200950265
+        },
+        {
+          "id": "q26",
+          "question": "At what rate does paid time off accrue per month for full-time employees?",
+          "file_type": "docx",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "employee_handbook.docx::0"
+          ],
+          "retrieved_chunk_ids": [
+            "employee_handbook.docx::0",
+            "board_meeting_minutes.pdf::0",
+            "employee_roster.csv::1",
+            "employee_roster.csv::3"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 40.50141596235335
+        },
+        {
+          "id": "q27",
+          "question": "What onboarding protocol pairs new hires with an existing team member?",
+          "file_type": "docx",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "onboarding_checklist.docx::0"
+          ],
+          "retrieved_chunk_ids": [
+            "onboarding_checklist.docx::0",
+            "board_meeting_minutes.pdf::0",
+            "employee_roster.csv::1",
+            "product_faq.txt::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 42.930457973852754
+        },
+        {
+          "id": "q28",
+          "question": "Within how many business days must IT provisioning be completed after offer acceptance?",
+          "file_type": "docx",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "onboarding_checklist.docx::0"
+          ],
+          "retrieved_chunk_ids": [
+            "onboarding_checklist.docx::0",
+            "employee_handbook.docx::0",
+            "board_meeting_minutes.pdf::0",
+            "api_reference.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 12.690707808360457
+        }
+      ],
+      "aggregate": {
+        "precision_at_k": 0.25,
+        "recall_at_k": 1.0,
+        "mrr": 0.9642857142857143,
+        "map": 0.9642857142857143,
+        "latency_ms": {
+          "p50": 12.88775005377829,
+          "p95": 50.01393985003232,
+          "mean": 26.533394370095007
+        },
+        "recall_at_k_by_category": {
+          "exact_number": 1.0,
+          "rare_term": 1.0
+        }
+      }
+    },
+    "BM25-only": {
+      "per_question": [
+        {
+          "id": "q01",
+          "question": "What uptime SLA does Nimbus Sync guarantee?",
+          "file_type": "txt",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "product_faq.txt::0"
+          ],
+          "retrieved_chunk_ids": [
+            "product_faq.txt::0",
+            "board_meeting_minutes.pdf::0",
+            "security_audit_report.pdf::0",
+            "api_reference.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.7621250115334988
+        },
+        {
+          "id": "q02",
+          "question": "What conflict resolution technique does Nimbus Sync use to merge concurrent edits from multiple devices?",
+          "file_type": "txt",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "product_faq.txt::0"
+          ],
+          "retrieved_chunk_ids": [
+            "product_faq.txt::0",
+            "release_notes.txt::0",
+            "security_audit_report.pdf::0",
+            "deployment_guide.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.8230418898165226
+        },
+        {
+          "id": "q03",
+          "question": "How much does the Nimbus Sync Pro plan cost per month?",
+          "file_type": "txt",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "product_faq.txt::0"
+          ],
+          "retrieved_chunk_ids": [
+            "product_faq.txt::0",
+            "api_reference.md::0",
+            "release_notes.txt::0",
+            "security_audit_report.pdf::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.7417078595608473
+        },
+        {
+          "id": "q04",
+          "question": "Which CVE was fixed in Nimbus Sync version 3.4.2?",
+          "file_type": "txt",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "release_notes.txt::0"
+          ],
+          "retrieved_chunk_ids": [
+            "security_audit_report.pdf::0",
+            "security_audit_report.pdf::1",
+            "product_faq.txt::0",
+            "deployment_guide.md::0"
+          ],
+          "precision_at_k": 0.0,
+          "recall_at_k": 0.0,
+          "reciprocal_rank": 0.0,
+          "average_precision": 0.0,
+          "latency_ms": 0.696792034432292
+        },
+        {
+          "id": "q05",
+          "question": "By what percentage did sync latency improve in version 3.4.2?",
+          "file_type": "txt",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "release_notes.txt::0"
+          ],
+          "retrieved_chunk_ids": [
+            "release_notes.txt::0",
+            "security_audit_report.pdf::1",
+            "deployment_guide.md::0",
+            "security_audit_report.pdf::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.6989999674260616
+        },
+        {
+          "id": "q06",
+          "question": "What was the maximum number of linked devices per account before it was increased in version 3.4.1?",
+          "file_type": "txt",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "release_notes.txt::0"
+          ],
+          "retrieved_chunk_ids": [
+            "release_notes.txt::0",
+            "deployment_guide.md::0",
+            "product_faq.txt::0",
+            "api_reference.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.7882078643888235
+        },
+        {
+          "id": "q07",
+          "question": "What --max-replicas value is recommended for the sync-worker autoscaler?",
+          "file_type": "md",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "deployment_guide.md::0"
+          ],
+          "retrieved_chunk_ids": [
+            "deployment_guide.md::0",
+            "onboarding_checklist.docx::0",
+            "product_faq.txt::0",
+            "employee_handbook.docx::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.6863339804112911
+        },
+        {
+          "id": "q08",
+          "question": "What tool is used for canary rollouts of Nimbus Sync in production?",
+          "file_type": "md",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "deployment_guide.md::0"
+          ],
+          "retrieved_chunk_ids": [
+            "deployment_guide.md::0",
+            "product_faq.txt::0",
+            "board_meeting_minutes.pdf::0",
+            "release_notes.txt::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.8699579630047083
+        },
+        {
+          "id": "q09",
+          "question": "What Helm chart version is currently pinned for the Kubernetes deployment?",
+          "file_type": "md",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "deployment_guide.md::0"
+          ],
+          "retrieved_chunk_ids": [
+            "deployment_guide.md::0",
+            "onboarding_checklist.docx::0",
+            "product_faq.txt::0",
+            "employee_handbook.docx::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.8250840473920107
+        },
+        {
+          "id": "q10",
+          "question": "What is the Nimbus Sync API's rate limit per API key?",
+          "file_type": "md",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "api_reference.md::0"
+          ],
+          "retrieved_chunk_ids": [
+            "api_reference.md::0",
+            "product_faq.txt::0",
+            "deployment_guide.md::0",
+            "employee_handbook.docx::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.7435409352183342
+        },
+        {
+          "id": "q11",
+          "question": "What error code is returned when the Nimbus Sync API rate limit is exceeded?",
+          "file_type": "md",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "api_reference.md::0"
+          ],
+          "retrieved_chunk_ids": [
+            "api_reference.md::0",
+            "deployment_guide.md::0",
+            "product_faq.txt::0",
+            "board_meeting_minutes.pdf::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.851375050842762
+        },
+        {
+          "id": "q12",
+          "question": "How long are Nimbus Sync API bearer tokens valid before they expire?",
+          "file_type": "md",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "api_reference.md::0"
+          ],
+          "retrieved_chunk_ids": [
+            "api_reference.md::0",
+            "product_faq.txt::0",
+            "board_meeting_minutes.pdf::0",
+            "deployment_guide.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.7442499045282602
+        },
+        {
+          "id": "q13",
+          "question": "What was the NA region's Q3 revenue for NimbusPro?",
+          "file_type": "csv",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "quarterly_sales.csv::2"
+          ],
+          "retrieved_chunk_ids": [
+            "quarterly_sales.csv::2",
+            "employee_handbook.docx::0",
+            "release_notes.txt::0",
+            "onboarding_checklist.docx::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.8083339780569077
+        },
+        {
+          "id": "q14",
+          "question": "What was APAC's Q1 revenue for NimbusLite?",
+          "file_type": "csv",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "quarterly_sales.csv::3"
+          ],
+          "retrieved_chunk_ids": [
+            "employee_handbook.docx::0",
+            "release_notes.txt::0",
+            "board_meeting_minutes.pdf::0",
+            "onboarding_checklist.docx::0"
+          ],
+          "precision_at_k": 0.0,
+          "recall_at_k": 0.0,
+          "reciprocal_rank": 0.0,
+          "average_precision": 0.0,
+          "latency_ms": 0.7336670532822609
+        },
+        {
+          "id": "q15",
+          "question": "What was EMEA's Q4 revenue for NimbusPro?",
+          "file_type": "csv",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "quarterly_sales.csv::1"
+          ],
+          "retrieved_chunk_ids": [
+            "employee_handbook.docx::0",
+            "release_notes.txt::0",
+            "board_meeting_minutes.pdf::0",
+            "onboarding_checklist.docx::0"
+          ],
+          "precision_at_k": 0.0,
+          "recall_at_k": 0.0,
+          "reciprocal_rank": 0.0,
+          "average_precision": 0.0,
+          "latency_ms": 0.693541020154953
+        },
+        {
+          "id": "q16",
+          "question": "What department does Fatima Al-Sayed work in?",
+          "file_type": "csv",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "employee_roster.csv::2"
+          ],
+          "retrieved_chunk_ids": [
+            "employee_roster.csv::2",
+            "employee_handbook.docx::0",
+            "onboarding_checklist.docx::0",
+            "quarterly_sales.csv::2"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.6629170384258032
+        },
+        {
+          "id": "q17",
+          "question": "What is Tomasz Wozniak's salary?",
+          "file_type": "csv",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "employee_roster.csv::1"
+          ],
+          "retrieved_chunk_ids": [
+            "employee_roster.csv::1",
+            "onboarding_checklist.docx::0",
+            "deployment_guide.md::0",
+            "product_faq.txt::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.6343328859657049
+        },
+        {
+          "id": "q18",
+          "question": "When was Priya Chandrasekaran hired?",
+          "file_type": "csv",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "employee_roster.csv::0"
+          ],
+          "retrieved_chunk_ids": [
+            "employee_roster.csv::0",
+            "quarterly_sales.csv::3",
+            "release_notes.txt::0",
+            "deployment_guide.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.6396251264959574
+        },
+        {
+          "id": "q19",
+          "question": "What budget did the board approve for the Nimbus Sync infrastructure expansion?",
+          "file_type": "pdf",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "board_meeting_minutes.pdf::0"
+          ],
+          "retrieved_chunk_ids": [
+            "board_meeting_minutes.pdf::0",
+            "product_faq.txt::0",
+            "release_notes.txt::0",
+            "security_audit_report.pdf::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.6983340717852116
+        },
+        {
+          "id": "q20",
+          "question": "How many of the board's 9 members were present at the 2025-10-14 meeting, and what clause did that invoke?",
+          "file_type": "pdf",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "board_meeting_minutes.pdf::0"
+          ],
+          "retrieved_chunk_ids": [
+            "board_meeting_minutes.pdf::0",
+            "onboarding_checklist.docx::0",
+            "employee_handbook.docx::0",
+            "security_audit_report.pdf::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.7699169218540192
+        },
+        {
+          "id": "q21",
+          "question": "How many critical severity findings did the security audit identify?",
+          "file_type": "pdf",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "security_audit_report.pdf::0"
+          ],
+          "retrieved_chunk_ids": [
+            "security_audit_report.pdf::1",
+            "onboarding_checklist.docx::0",
+            "security_audit_report.pdf::0",
+            "deployment_guide.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 0.3333333333333333,
+          "average_precision": 0.3333333333333333,
+          "latency_ms": 0.6779169198125601
+        },
+        {
+          "id": "q22",
+          "question": "What kind of race condition was found in the file-locking subsystem?",
+          "file_type": "pdf",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "security_audit_report.pdf::0"
+          ],
+          "retrieved_chunk_ids": [
+            "security_audit_report.pdf::0",
+            "security_audit_report.pdf::1",
+            "board_meeting_minutes.pdf::0",
+            "onboarding_checklist.docx::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.6913330871611834
+        },
+        {
+          "id": "q23",
+          "question": "Which CVE does critical finding NS-2025-02 correspond to?",
+          "file_type": "pdf",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "security_audit_report.pdf::0"
+          ],
+          "retrieved_chunk_ids": [
+            "security_audit_report.pdf::0",
+            "security_audit_report.pdf::1",
+            "onboarding_checklist.docx::0",
+            "quarterly_sales.csv::2"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.657249940559268
+        },
+        {
+          "id": "q24",
+          "question": "Within how many days does the security audit recommend remediating critical and high findings?",
+          "file_type": "pdf",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "security_audit_report.pdf::1"
+          ],
+          "retrieved_chunk_ids": [
+            "security_audit_report.pdf::1",
+            "onboarding_checklist.docx::0",
+            "employee_handbook.docx::0",
+            "security_audit_report.pdf::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.724750105291605
+        },
+        {
+          "id": "q25",
+          "question": "What form must an employee file if they work remotely for more than 14 consecutive days?",
+          "file_type": "docx",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "employee_handbook.docx::0"
+          ],
+          "retrieved_chunk_ids": [
+            "employee_handbook.docx::0",
+            "release_notes.txt::0",
+            "onboarding_checklist.docx::0",
+            "api_reference.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.7220420520752668
+        },
+        {
+          "id": "q26",
+          "question": "At what rate does paid time off accrue per month for full-time employees?",
+          "file_type": "docx",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "employee_handbook.docx::0"
+          ],
+          "retrieved_chunk_ids": [
+            "employee_handbook.docx::0",
+            "product_faq.txt::0",
+            "api_reference.md::0",
+            "release_notes.txt::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.7133330218493938
+        },
+        {
+          "id": "q27",
+          "question": "What onboarding protocol pairs new hires with an existing team member?",
+          "file_type": "docx",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "onboarding_checklist.docx::0"
+          ],
+          "retrieved_chunk_ids": [
+            "onboarding_checklist.docx::0",
+            "api_reference.md::0",
+            "employee_handbook.docx::0",
+            "quarterly_sales.csv::3"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.682000070810318
+        },
+        {
+          "id": "q28",
+          "question": "Within how many business days must IT provisioning be completed after offer acceptance?",
+          "file_type": "docx",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "onboarding_checklist.docx::0"
+          ],
+          "retrieved_chunk_ids": [
+            "onboarding_checklist.docx::0",
+            "employee_handbook.docx::0",
+            "api_reference.md::0",
+            "product_faq.txt::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 0.702874967828393
+        }
+      ],
+      "aggregate": {
+        "precision_at_k": 0.22321428571428573,
+        "recall_at_k": 0.8928571428571429,
+        "mrr": 0.869047619047619,
+        "map": 0.869047619047619,
+        "latency_ms": {
+          "p50": 0.7176875369623303,
+          "p95": 0.842173199634999,
+          "mean": 0.7301280274987221
+        },
+        "recall_at_k_by_category": {
+          "exact_number": 0.875,
+          "rare_term": 0.9166666666666666
+        }
+      }
+    },
+    "Ensemble (Hybrid)": {
+      "per_question": [
+        {
+          "id": "q01",
+          "question": "What uptime SLA does Nimbus Sync guarantee?",
+          "file_type": "txt",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "product_faq.txt::0"
+          ],
+          "retrieved_chunk_ids": [
+            "product_faq.txt::0",
+            "release_notes.txt::0",
+            "api_reference.md::0",
+            "security_audit_report.pdf::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 11.12712500616908
+        },
+        {
+          "id": "q02",
+          "question": "What conflict resolution technique does Nimbus Sync use to merge concurrent edits from multiple devices?",
+          "file_type": "txt",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "product_faq.txt::0"
+          ],
+          "retrieved_chunk_ids": [
+            "release_notes.txt::0",
+            "product_faq.txt::0",
+            "security_audit_report.pdf::0",
+            "api_reference.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 0.5,
+          "average_precision": 0.5,
+          "latency_ms": 12.109208153560758
+        },
+        {
+          "id": "q03",
+          "question": "How much does the Nimbus Sync Pro plan cost per month?",
+          "file_type": "txt",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "product_faq.txt::0"
+          ],
+          "retrieved_chunk_ids": [
+            "product_faq.txt::0",
+            "api_reference.md::0",
+            "board_meeting_minutes.pdf::0",
+            "release_notes.txt::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 11.268457863479853
+        },
+        {
+          "id": "q04",
+          "question": "Which CVE was fixed in Nimbus Sync version 3.4.2?",
+          "file_type": "txt",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "release_notes.txt::0"
+          ],
+          "retrieved_chunk_ids": [
+            "security_audit_report.pdf::0",
+            "release_notes.txt::0",
+            "product_faq.txt::0",
+            "deployment_guide.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 0.5,
+          "average_precision": 0.5,
+          "latency_ms": 12.68958393484354
+        },
+        {
+          "id": "q05",
+          "question": "By what percentage did sync latency improve in version 3.4.2?",
+          "file_type": "txt",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "release_notes.txt::0"
+          ],
+          "retrieved_chunk_ids": [
+            "release_notes.txt::0",
+            "security_audit_report.pdf::1",
+            "security_audit_report.pdf::0",
+            "deployment_guide.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 12.086499948054552
+        },
+        {
+          "id": "q06",
+          "question": "What was the maximum number of linked devices per account before it was increased in version 3.4.1?",
+          "file_type": "txt",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "release_notes.txt::0"
+          ],
+          "retrieved_chunk_ids": [
+            "release_notes.txt::0",
+            "api_reference.md::0",
+            "product_faq.txt::0",
+            "board_meeting_minutes.pdf::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 11.465915944427252
+        },
+        {
+          "id": "q07",
+          "question": "What --max-replicas value is recommended for the sync-worker autoscaler?",
+          "file_type": "md",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "deployment_guide.md::0"
+          ],
+          "retrieved_chunk_ids": [
+            "deployment_guide.md::0",
+            "release_notes.txt::0",
+            "product_faq.txt::0",
+            "api_reference.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 12.115125078707933
+        },
+        {
+          "id": "q08",
+          "question": "What tool is used for canary rollouts of Nimbus Sync in production?",
+          "file_type": "md",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "deployment_guide.md::0"
+          ],
+          "retrieved_chunk_ids": [
+            "deployment_guide.md::0",
+            "product_faq.txt::0",
+            "release_notes.txt::0",
+            "board_meeting_minutes.pdf::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 12.38670782186091
+        },
+        {
+          "id": "q09",
+          "question": "What Helm chart version is currently pinned for the Kubernetes deployment?",
+          "file_type": "md",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "deployment_guide.md::0"
+          ],
+          "retrieved_chunk_ids": [
+            "deployment_guide.md::0",
+            "security_audit_report.pdf::0",
+            "board_meeting_minutes.pdf::0",
+            "release_notes.txt::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 13.110334053635597
+        },
+        {
+          "id": "q10",
+          "question": "What is the Nimbus Sync API's rate limit per API key?",
+          "file_type": "md",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "api_reference.md::0"
+          ],
+          "retrieved_chunk_ids": [
+            "api_reference.md::0",
+            "product_faq.txt::0",
+            "deployment_guide.md::0",
+            "release_notes.txt::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 12.439999962225556
+        },
+        {
+          "id": "q11",
+          "question": "What error code is returned when the Nimbus Sync API rate limit is exceeded?",
+          "file_type": "md",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "api_reference.md::0"
+          ],
+          "retrieved_chunk_ids": [
+            "api_reference.md::0",
+            "product_faq.txt::0",
+            "release_notes.txt::0",
+            "deployment_guide.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 16.018582973629236
+        },
+        {
+          "id": "q12",
+          "question": "How long are Nimbus Sync API bearer tokens valid before they expire?",
+          "file_type": "md",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "api_reference.md::0"
+          ],
+          "retrieved_chunk_ids": [
+            "api_reference.md::0",
+            "product_faq.txt::0",
+            "release_notes.txt::0",
+            "deployment_guide.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 12.945833150297403
+        },
+        {
+          "id": "q13",
+          "question": "What was the NA region's Q3 revenue for NimbusPro?",
+          "file_type": "csv",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "quarterly_sales.csv::2"
+          ],
+          "retrieved_chunk_ids": [
+            "quarterly_sales.csv::2",
+            "product_faq.txt::0",
+            "board_meeting_minutes.pdf::0",
+            "quarterly_sales.csv::1"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 12.697458965703845
+        },
+        {
+          "id": "q14",
+          "question": "What was APAC's Q1 revenue for NimbusLite?",
+          "file_type": "csv",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "quarterly_sales.csv::3"
+          ],
+          "retrieved_chunk_ids": [
+            "board_meeting_minutes.pdf::0",
+            "product_faq.txt::0",
+            "quarterly_sales.csv::3",
+            "quarterly_sales.csv::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 0.3333333333333333,
+          "average_precision": 0.3333333333333333,
+          "latency_ms": 13.552166987210512
+        },
+        {
+          "id": "q15",
+          "question": "What was EMEA's Q4 revenue for NimbusPro?",
+          "file_type": "csv",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "quarterly_sales.csv::1"
+          ],
+          "retrieved_chunk_ids": [
+            "board_meeting_minutes.pdf::0",
+            "product_faq.txt::0",
+            "quarterly_sales.csv::1",
+            "quarterly_sales.csv::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 0.3333333333333333,
+          "average_precision": 0.3333333333333333,
+          "latency_ms": 13.115625130012631
+        },
+        {
+          "id": "q16",
+          "question": "What department does Fatima Al-Sayed work in?",
+          "file_type": "csv",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "employee_roster.csv::2"
+          ],
+          "retrieved_chunk_ids": [
+            "employee_roster.csv::2",
+            "quarterly_sales.csv::0",
+            "employee_roster.csv::3",
+            "employee_roster.csv::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 11.816291837021708
+        },
+        {
+          "id": "q17",
+          "question": "What is Tomasz Wozniak's salary?",
+          "file_type": "csv",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "employee_roster.csv::1"
+          ],
+          "retrieved_chunk_ids": [
+            "employee_roster.csv::1",
+            "employee_roster.csv::2",
+            "employee_roster.csv::3",
+            "employee_roster.csv::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 11.348625179380178
+        },
+        {
+          "id": "q18",
+          "question": "When was Priya Chandrasekaran hired?",
+          "file_type": "csv",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "employee_roster.csv::0"
+          ],
+          "retrieved_chunk_ids": [
+            "employee_roster.csv::0",
+            "employee_roster.csv::2",
+            "employee_roster.csv::1",
+            "employee_roster.csv::3"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 11.325583094730973
+        },
+        {
+          "id": "q19",
+          "question": "What budget did the board approve for the Nimbus Sync infrastructure expansion?",
+          "file_type": "pdf",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "board_meeting_minutes.pdf::0"
+          ],
+          "retrieved_chunk_ids": [
+            "product_faq.txt::0",
+            "board_meeting_minutes.pdf::0",
+            "release_notes.txt::0",
+            "api_reference.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 0.5,
+          "average_precision": 0.5,
+          "latency_ms": 12.833166169002652
+        },
+        {
+          "id": "q20",
+          "question": "How many of the board's 9 members were present at the 2025-10-14 meeting, and what clause did that invoke?",
+          "file_type": "pdf",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "board_meeting_minutes.pdf::0"
+          ],
+          "retrieved_chunk_ids": [
+            "board_meeting_minutes.pdf::0",
+            "onboarding_checklist.docx::0",
+            "quarterly_sales.csv::1",
+            "quarterly_sales.csv::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 11.181625071913004
+        },
+        {
+          "id": "q21",
+          "question": "How many critical severity findings did the security audit identify?",
+          "file_type": "pdf",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "security_audit_report.pdf::0"
+          ],
+          "retrieved_chunk_ids": [
+            "security_audit_report.pdf::0",
+            "onboarding_checklist.docx::0",
+            "security_audit_report.pdf::1",
+            "board_meeting_minutes.pdf::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 11.459624860435724
+        },
+        {
+          "id": "q22",
+          "question": "What kind of race condition was found in the file-locking subsystem?",
+          "file_type": "pdf",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "security_audit_report.pdf::0"
+          ],
+          "retrieved_chunk_ids": [
+            "security_audit_report.pdf::0",
+            "security_audit_report.pdf::1",
+            "release_notes.txt::0",
+            "board_meeting_minutes.pdf::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 13.061166042461991
+        },
+        {
+          "id": "q23",
+          "question": "Which CVE does critical finding NS-2025-02 correspond to?",
+          "file_type": "pdf",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "security_audit_report.pdf::0"
+          ],
+          "retrieved_chunk_ids": [
+            "security_audit_report.pdf::0",
+            "release_notes.txt::0",
+            "quarterly_sales.csv::2",
+            "quarterly_sales.csv::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 23.894458077847958
+        },
+        {
+          "id": "q24",
+          "question": "Within how many days does the security audit recommend remediating critical and high findings?",
+          "file_type": "pdf",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "security_audit_report.pdf::1"
+          ],
+          "retrieved_chunk_ids": [
+            "security_audit_report.pdf::1",
+            "onboarding_checklist.docx::0",
+            "security_audit_report.pdf::0",
+            "deployment_guide.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 16.333209117874503
+        },
+        {
+          "id": "q25",
+          "question": "What form must an employee file if they work remotely for more than 14 consecutive days?",
+          "file_type": "docx",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "employee_handbook.docx::0"
+          ],
+          "retrieved_chunk_ids": [
+            "employee_handbook.docx::0",
+            "onboarding_checklist.docx::0",
+            "product_faq.txt::0",
+            "api_reference.md::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 15.911290887743235
+        },
+        {
+          "id": "q26",
+          "question": "At what rate does paid time off accrue per month for full-time employees?",
+          "file_type": "docx",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "employee_handbook.docx::0"
+          ],
+          "retrieved_chunk_ids": [
+            "employee_handbook.docx::0",
+            "board_meeting_minutes.pdf::0",
+            "api_reference.md::0",
+            "product_faq.txt::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 12.777457945048809
+        },
+        {
+          "id": "q27",
+          "question": "What onboarding protocol pairs new hires with an existing team member?",
+          "file_type": "docx",
+          "category": "rare_term",
+          "relevant_chunk_ids": [
+            "onboarding_checklist.docx::0"
+          ],
+          "retrieved_chunk_ids": [
+            "onboarding_checklist.docx::0",
+            "employee_handbook.docx::0",
+            "quarterly_sales.csv::0",
+            "board_meeting_minutes.pdf::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 12.065458111464977
+        },
+        {
+          "id": "q28",
+          "question": "Within how many business days must IT provisioning be completed after offer acceptance?",
+          "file_type": "docx",
+          "category": "exact_number",
+          "relevant_chunk_ids": [
+            "onboarding_checklist.docx::0"
+          ],
+          "retrieved_chunk_ids": [
+            "onboarding_checklist.docx::0",
+            "employee_handbook.docx::0",
+            "api_reference.md::0",
+            "board_meeting_minutes.pdf::0"
+          ],
+          "precision_at_k": 0.25,
+          "recall_at_k": 1.0,
+          "reciprocal_rank": 1.0,
+          "average_precision": 1.0,
+          "latency_ms": 13.13237496651709
+        }
+      ],
+      "aggregate": {
+        "precision_at_k": 0.25,
+        "recall_at_k": 1.0,
+        "mrr": 0.8988095238095238,
+        "map": 0.8988095238095238,
+        "latency_ms": {
+          "p50": 12.564791948534548,
+          "p95": 16.22308996738866,
+          "mean": 13.081034154830766
+        },
+        "recall_at_k_by_category": {
+          "exact_number": 1.0,
+          "rare_term": 1.0
+        }
+      }
+    }
+  },
+  "meta": {
+    "eval_user_id": 9001,
+    "top_k": 4,
+    "num_questions": 28,
+    "num_indexed_chunks": 17,
+    "generated_at": "2026-08-07T14:40:00.131237+00:00",
+    "methodology_notes": [
+      "Latency includes retriever construction (FAISS load from disk / BM25Retriever rebuild from chunks.pkl / get_hybrid_retriever) plus the retrieval call itself, because that is the actual per-request cost today -- chain/hybrid_retriever.py builds both indexes fresh on every call, with no cross-request caching.",
+      "One untimed warm-up call precedes each config's timed loop to absorb one-time process costs (e.g. first embedding-model load).",
+      "Ensemble (Hybrid) uses the unmodified chain.hybrid_retriever.get_hybrid_retriever(), which pulls top-8 from each of FAISS and BM25 before RRF-fusing; results here are that fused list's top-K."
+    ]
+  }
+}

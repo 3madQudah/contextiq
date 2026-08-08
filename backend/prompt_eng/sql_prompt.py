@@ -1,33 +1,18 @@
 """
-Prompt templates used to instruct the LLM how to answer using retrieved context.
+Prompts for the text-to-SQL feature (chain/sql_chain.py): natural-language-
+to-SQL translation with schema awareness and a SELECT-only reminder, plus a
+second prompt for summarizing query results in plain language. Kept in this
+folder alongside the per-file-type RAG prompts as one place for all prompt
+engineering, even though the SQL feature has no embeddings/retrieval.
+
+Only SQL_PROMPT_TEMPLATE (the NL-to-SQL step) is registered under "sql" in
+PROMPT_REGISTRY — SQL_ANSWER_PROMPT_TEMPLATE (the results summarizer) isn't
+selected by file_type, so chain/sql_chain.py imports it directly by name.
 """
 
 from langchain_core.prompts import PromptTemplate
 
-RAG_PROMPT_TEMPLATE = PromptTemplate(
-    input_variables=["history", "context", "question"],
-    template=(
-        "You are ContextIQ, an assistant that answers questions using ONLY the "
-        "context below, which was retrieved from the user's own uploaded documents.\n\n"
-        "Each chunk of context is preceded by a [Source: <file name>] marker "
-        "indicating which file it came from.\n\n"
-        "Rules:\n"
-        "- Answer strictly using the given context. If the context does not contain "
-        "enough information to answer, say you don't know rather than guessing.\n"
-        "- At the end of your answer, cite which file(s) the information came from, "
-        "prefixed with \"Source:\", using the exact file name(s) taken from the "
-        "[Source: ...] markers in the context above.\n"
-        "- Use the prior conversation only to understand what the question refers "
-        "to (e.g. pronouns like \"it\" or \"why\"); still answer strictly from the "
-        "context above, not from the prior conversation.\n\n"
-        "Prior conversation:\n{history}\n\n"
-        "Context:\n{context}\n\n"
-        "Question: {question}\n\n"
-        "Answer:"
-    ),
-)
-
-SQL_GENERATION_PROMPT_TEMPLATE = PromptTemplate(
+SQL_PROMPT_TEMPLATE = PromptTemplate(
     input_variables=["db_type", "schema", "question"],
     template=(
         "You are a SQL generator for a {db_type} database. You are given the "

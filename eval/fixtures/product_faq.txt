@@ -1,0 +1,9 @@
+Nimbus Sync Product FAQ
+
+Nimbus Sync is a cross-platform file synchronization service launched in 2019 by Vantage Cloud Inc. The Pro plan costs $12.99 per month and includes 250GB of storage per user.
+
+Nimbus Sync guarantees a 99.95% uptime SLA, measured monthly across all regions. If uptime falls below this threshold, affected customers receive a 10% service credit for that billing cycle.
+
+Under the hood, Nimbus Sync uses vector clock conflict resolution to merge concurrent edits from multiple devices without a central lock server. This lets two offline devices resync automatically once they reconnect.
+
+For enterprise customers, Nimbus Sync supports single sign-on via SAML 2.0 and can be deployed in a private VPC on request.

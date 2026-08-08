@@ -1,0 +1,267 @@
+{
+  "_meta": {
+    "description": "Retrieval eval set for ContextIQ's hybrid (FAISS + BM25 EnsembleRetriever) search.",
+    "READ_ME_BEFORE_CITING": [
+      "Your dev environment had almost no indexed data when this was built (6 chunks total, only txt/csv/md, no pdf/docx). To get all 5 file types covered, a small SYNTHETIC 10-document corpus (eval/fixtures/*, ~17 chunks) was written and ingested into a dedicated eval user (user_id=9001, see eval/config.py) via the app's own unmodified ingestion pipeline (see eval/build_eval_corpus.py).",
+      "Because the corpus is synthetic and authored by the assistant, ground truth relevant_chunk_ids below were assigned with high confidence by directly reading the actual indexed chunk text (see eval/build_eval_corpus.py output) rather than guessed blind -- each entry is marked verified=true on that basis. Still spot-check a sample yourself before citing numbers publicly; 'verified' here means 'traced to real chunk content', not 'independently reviewed by you'.",
+      "IMPORTANT CAVEAT for citing results: this corpus is tiny (17 chunks, 10 documents). Precision/Recall/MRR/MAP numbers on a 17-chunk corpus are illustrative of hybrid-vs-single-retriever BEHAVIOR (e.g. exact-number/rare-term lookups favoring BM25/hybrid over pure vector search), not a claim about performance at production scale. If you cite these publicly, say so -- e.g. 'on a controlled 17-chunk, 5-file-type benchmark' rather than implying a large-scale production benchmark.",
+      "chunk_id format: '<file_name>::<index>', where index is the chunk's 0-based position within that file's chunk list, in the order build_eval_corpus.py ingested it. Not a field the app stores itself -- reconstructed identically in run_eval.py from the persisted chunks.pkl order."
+    ],
+    "eval_user_id": 9001,
+    "top_k": 5
+  },
+  "questions": [
+    {
+      "id": "q01",
+      "question": "What uptime SLA does Nimbus Sync guarantee?",
+      "file_type": "txt",
+      "relevant_chunk_ids": ["product_faq.txt::0"],
+      "category": "exact_number",
+      "verified": true,
+      "notes": "Answer is the exact figure 99.95%."
+    },
+    {
+      "id": "q02",
+      "question": "What conflict resolution technique does Nimbus Sync use to merge concurrent edits from multiple devices?",
+      "file_type": "txt",
+      "relevant_chunk_ids": ["product_faq.txt::0"],
+      "category": "rare_term",
+      "verified": true,
+      "notes": "Rare/specific term 'vector clock conflict resolution' -- good BM25 vs. pure-vector test."
+    },
+    {
+      "id": "q03",
+      "question": "How much does the Nimbus Sync Pro plan cost per month?",
+      "file_type": "txt",
+      "relevant_chunk_ids": ["product_faq.txt::0"],
+      "category": "exact_number",
+      "verified": true,
+      "notes": "Answer is $12.99/month."
+    },
+    {
+      "id": "q04",
+      "question": "Which CVE was fixed in Nimbus Sync version 3.4.2?",
+      "file_type": "txt",
+      "relevant_chunk_ids": ["release_notes.txt::0"],
+      "category": "rare_term",
+      "verified": true,
+      "notes": "Exact identifier CVE-2025-41217 -- ideal for BM25/keyword matching."
+    },
+    {
+      "id": "q05",
+      "question": "By what percentage did sync latency improve in version 3.4.2?",
+      "file_type": "txt",
+      "relevant_chunk_ids": ["release_notes.txt::0"],
+      "category": "exact_number",
+      "verified": true,
+      "notes": "Answer is 42%."
+    },
+    {
+      "id": "q06",
+      "question": "What was the maximum number of linked devices per account before it was increased in version 3.4.1?",
+      "file_type": "txt",
+      "relevant_chunk_ids": ["release_notes.txt::0"],
+      "category": "exact_number",
+      "verified": true,
+      "notes": "Answer is 10 (increased to 25)."
+    },
+    {
+      "id": "q07",
+      "question": "What --max-replicas value is recommended for the sync-worker autoscaler?",
+      "file_type": "md",
+      "relevant_chunk_ids": ["deployment_guide.md::0"],
+      "category": "exact_number",
+      "verified": true,
+      "notes": "Answer is 17, a literal CLI flag value."
+    },
+    {
+      "id": "q08",
+      "question": "What tool is used for canary rollouts of Nimbus Sync in production?",
+      "file_type": "md",
+      "relevant_chunk_ids": ["deployment_guide.md::0"],
+      "category": "rare_term",
+      "verified": true,
+      "notes": "Rare term 'Argo Rollouts'."
+    },
+    {
+      "id": "q09",
+      "question": "What Helm chart version is currently pinned for the Kubernetes deployment?",
+      "file_type": "md",
+      "relevant_chunk_ids": ["deployment_guide.md::0"],
+      "category": "exact_number",
+      "verified": true,
+      "notes": "Answer is 2.3.1."
+    },
+    {
+      "id": "q10",
+      "question": "What is the Nimbus Sync API's rate limit per API key?",
+      "file_type": "md",
+      "relevant_chunk_ids": ["api_reference.md::0"],
+      "category": "exact_number",
+      "verified": true,
+      "notes": "Answer is 1000 requests/hour."
+    },
+    {
+      "id": "q11",
+      "question": "What error code is returned when the Nimbus Sync API rate limit is exceeded?",
+      "file_type": "md",
+      "relevant_chunk_ids": ["api_reference.md::0"],
+      "category": "rare_term",
+      "verified": true,
+      "notes": "Exact code ERR_QUOTA_9921 -- strong BM25 case."
+    },
+    {
+      "id": "q12",
+      "question": "How long are Nimbus Sync API bearer tokens valid before they expire?",
+      "file_type": "md",
+      "relevant_chunk_ids": ["api_reference.md::0"],
+      "category": "exact_number",
+      "verified": true,
+      "notes": "Answer is 3600 seconds."
+    },
+    {
+      "id": "q13",
+      "question": "What was the NA region's Q3 revenue for NimbusPro?",
+      "file_type": "csv",
+      "relevant_chunk_ids": ["quarterly_sales.csv::2"],
+      "category": "exact_number",
+      "verified": true,
+      "notes": "Answer is 310450. Each CSV row is its own chunk, so this tests picking one row out of four similar ones."
+    },
+    {
+      "id": "q14",
+      "question": "What was APAC's Q1 revenue for NimbusLite?",
+      "file_type": "csv",
+      "relevant_chunk_ids": ["quarterly_sales.csv::3"],
+      "category": "exact_number",
+      "verified": true,
+      "notes": "Answer is 52310."
+    },
+    {
+      "id": "q15",
+      "question": "What was EMEA's Q4 revenue for NimbusPro?",
+      "file_type": "csv",
+      "relevant_chunk_ids": ["quarterly_sales.csv::1"],
+      "category": "exact_number",
+      "verified": true,
+      "notes": "Answer is 227310."
+    },
+    {
+      "id": "q16",
+      "question": "What department does Fatima Al-Sayed work in?",
+      "file_type": "csv",
+      "relevant_chunk_ids": ["employee_roster.csv::2"],
+      "category": "rare_term",
+      "verified": true,
+      "notes": "Unique proper name lookup -- BM25 should nail this via exact string match; semantic search may confuse across similar rows."
+    },
+    {
+      "id": "q17",
+      "question": "What is Tomasz Wozniak's salary?",
+      "file_type": "csv",
+      "relevant_chunk_ids": ["employee_roster.csv::1"],
+      "category": "rare_term",
+      "verified": true,
+      "notes": "Unique proper name + exact number lookup (109000)."
+    },
+    {
+      "id": "q18",
+      "question": "When was Priya Chandrasekaran hired?",
+      "file_type": "csv",
+      "relevant_chunk_ids": ["employee_roster.csv::0"],
+      "category": "rare_term",
+      "verified": true,
+      "notes": "Answer is 2021-03-15. Unique proper name lookup."
+    },
+    {
+      "id": "q19",
+      "question": "What budget did the board approve for the Nimbus Sync infrastructure expansion?",
+      "file_type": "pdf",
+      "relevant_chunk_ids": ["board_meeting_minutes.pdf::0"],
+      "category": "exact_number",
+      "verified": true,
+      "notes": "Answer is $2,450,000."
+    },
+    {
+      "id": "q20",
+      "question": "How many of the board's 9 members were present at the 2025-10-14 meeting, and what clause did that invoke?",
+      "file_type": "pdf",
+      "relevant_chunk_ids": ["board_meeting_minutes.pdf::0"],
+      "category": "rare_term",
+      "verified": true,
+      "notes": "Rare term 'shadow quorum clause'; exact count 7 of 9."
+    },
+    {
+      "id": "q21",
+      "question": "How many critical severity findings did the security audit identify?",
+      "file_type": "pdf",
+      "relevant_chunk_ids": ["security_audit_report.pdf::0"],
+      "category": "exact_number",
+      "verified": true,
+      "notes": "Answer is 2 critical findings; lives in the first of two chunks from this PDF."
+    },
+    {
+      "id": "q22",
+      "question": "What kind of race condition was found in the file-locking subsystem?",
+      "file_type": "pdf",
+      "relevant_chunk_ids": ["security_audit_report.pdf::0"],
+      "category": "rare_term",
+      "verified": true,
+      "notes": "Rare/technical term 'TOCTOU race condition'."
+    },
+    {
+      "id": "q23",
+      "question": "Which CVE does critical finding NS-2025-02 correspond to?",
+      "file_type": "pdf",
+      "relevant_chunk_ids": ["security_audit_report.pdf::0"],
+      "category": "rare_term",
+      "verified": true,
+      "notes": "Exact identifier CVE-2025-41217, same CVE as release_notes.txt::0 but a different source document/type -- tests whether retrieval returns the PDF chunk specifically, not just any chunk mentioning the CVE."
+    },
+    {
+      "id": "q24",
+      "question": "Within how many days does the security audit recommend remediating critical and high findings?",
+      "file_type": "pdf",
+      "relevant_chunk_ids": ["security_audit_report.pdf::1"],
+      "category": "exact_number",
+      "verified": true,
+      "notes": "Answer is 30 days; this sentence falls in the second (overlap tail) chunk of the PDF, not the first."
+    },
+    {
+      "id": "q25",
+      "question": "What form must an employee file if they work remotely for more than 14 consecutive days?",
+      "file_type": "docx",
+      "relevant_chunk_ids": ["employee_handbook.docx::0"],
+      "category": "rare_term",
+      "verified": true,
+      "notes": "Exact form code HR-118."
+    },
+    {
+      "id": "q26",
+      "question": "At what rate does paid time off accrue per month for full-time employees?",
+      "file_type": "docx",
+      "relevant_chunk_ids": ["employee_handbook.docx::0"],
+      "category": "exact_number",
+      "verified": true,
+      "notes": "Answer is 1.75 days/month."
+    },
+    {
+      "id": "q27",
+      "question": "What onboarding protocol pairs new hires with an existing team member?",
+      "file_type": "docx",
+      "relevant_chunk_ids": ["onboarding_checklist.docx::0"],
+      "category": "rare_term",
+      "verified": true,
+      "notes": "Rare term 'buddy-pairing protocol'."
+    },
+    {
+      "id": "q28",
+      "question": "Within how many business days must IT provisioning be completed after offer acceptance?",
+      "file_type": "docx",
+      "relevant_chunk_ids": ["onboarding_checklist.docx::0"],
+      "category": "exact_number",
+      "verified": true,
+      "notes": "Answer is 2 business days."
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+Nimbus Sync Release Notes
+
+Version 3.4.2 (released 2025-11-03)
+- Fixed CVE-2025-41217, a path traversal vulnerability in the desktop sync agent.
+- Reduced sync latency by 42% for folders containing more than 10,000 files.
+- Added support for selective sync on Linux ARM64 builds.
+
+Version 3.4.1 (released 2025-09-18)
+- Fixed a crash when resolving conflicts on files larger than 4GB.
+- The maximum number of linked devices per account increased from 10 to 25.
+
+Version 3.3.0 (released 2025-06-02)
+- Introduced the vector clock conflict resolution engine described in the FAQ, replacing the older last-writer-wins strategy.

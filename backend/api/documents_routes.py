@@ -13,7 +13,7 @@ from auth.models import User
 from ingestion.chunking import chunk_documents
 from ingestion.keyword_store import remove_chunks_for_file, save_chunks
 from ingestion.vector_store import build_faiss_index, rebuild_faiss_index
-from loaders.document_loader import load_document
+from loaders.document_loader import ScannedPDFError, load_document
 from utils.helpers import is_supported_file
 
 router = APIRouter()
@@ -37,7 +37,15 @@ def upload_document(file: UploadFile, current_user: User = Depends(get_current_u
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    documents = load_document(file_path)
+    try:
+        documents = load_document(file_path)
+    except ScannedPDFError as exc:
+        # The raw file is already saved above (so it isn't silently lost),
+        # but it's deliberately never chunked/indexed -- see
+        # load_pdf_with_scan_detection()'s docstring for why a scanned PDF
+        # must not become a silent chunks_indexed: 0 "success".
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)) from exc
+
     chunks = chunk_documents(documents, user_id=current_user.id, file_name=file.filename)
     build_faiss_index(chunks, user_id=current_user.id)
     save_chunks(chunks, user_id=current_user.id)
