@@ -11,6 +11,8 @@ passlib[bcrypt]==1.7.4
 bcrypt<4.1
 email-validator==2.3.0
 cryptography==46.0.3
+# Rate limiting for /api/auth/register and /api/auth/login.
+slowapi==0.1.10
 
 # --- Database (app DB + user-connected DBs for the text-to-SQL feature) ---
 sqlalchemy==2.0.43

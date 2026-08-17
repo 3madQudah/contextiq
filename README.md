@@ -1,100 +1,134 @@
 # ContextIQ
 
-ContextIQ is a retrieval-augmented generation (RAG) system that lets each user upload their own documents — PDFs, Word docs, spreadsheets, text, and Markdown — and ask questions about them in natural language, with every answer grounded in and cited back to the source file. It also supports connecting an external SQL database and querying it in plain English. Retrieval is hybrid (semantic + keyword) rather than pure vector search, and for the cases where retrieval alone can't be trusted — exact CSV aggregates, whole-document summaries — ContextIQ computes or reads the complete source directly instead of guessing from a handful of chunks.
+A per-user RAG system: upload your own documents (PDF, DOCX, CSV, TXT, Markdown) and ask questions with answers grounded in and cited back to the source file — plus connect an external SQL database and query it in plain English, read-only.
 
-## Key features
+## What problem it solves
 
-- **Hybrid retrieval** — an `EnsembleRetriever` combining FAISS (semantic/vector) search with BM25 (keyword) search, so exact terms, IDs, and numbers that pure vector search tends to miss are still found.
-- **Per-file-type prompts** — PDF, DOCX, CSV, TXT, Markdown, and SQL each get prompt guidance tailored to how that format actually behaves (e.g. handling PDF extraction noise, CSV aggregation caveats, DOCX/Markdown section structure).
-- **Cited answers** — every response names the specific file(s) it was drawn from.
-- **Per-user isolation** — each user has their own FAISS index, BM25 index, and document storage; nothing crosses between accounts.
-- **Text-to-SQL** — connect an external Postgres or MySQL database and ask questions in plain English, translated to SQL against your actual schema.
-- **Exact CSV computation** — aggregation questions ("average of column X", "top 5 by revenue", "total by region") are computed directly with pandas over the complete file, not estimated from retrieved chunks.
-- **Full-document analysis for DOCX/PDF/Markdown** — structural questions (word/page count, heading list) and exhaustive ones (whole-document summaries, "list every date mentioned") are answered from the complete document text, with an explicit refusal instead of a silently partial answer if a document is too large to process in one pass.
-- **Section-aware chunking** — DOCX and Markdown documents keep their heading/section structure as chunk metadata, so retrieved context tells you (and the model) which section it came from.
-- **Scanned-PDF detection** — a PDF with no extractable text layer is flagged at upload time with a clear error, instead of silently indexing as empty.
+Two failure modes of naive retrieval-augmented generation:
+
+1. **Pure vector search misses exact tokens** (IDs, codes, numbers). ContextIQ uses hybrid retrieval (FAISS semantic + BM25 keyword) so exact terms are still found — the eval below shows BM25-only misses exact-value questions the hybrid retriever recovers.
+2. **Top-K retrieval answers structural/aggregate questions from a partial sample.** For CSV aggregates and whole-document questions, ContextIQ computes or reads the complete source directly instead of guessing from a few chunks.
+
+## Features (as built)
+
+- Hybrid retrieval — `EnsembleRetriever` (FAISS + BM25, weights 0.5/0.5).
+- Cited answers — every document answer names its source file(s).
+- Per-user isolation — separate FAISS/BM25 indexes and document storage per account.
+- Exact CSV computation — aggregations (sum/mean/median/count/min/max/top-N/group-by) computed with pandas over the full file.
+- Full-document analysis (DOCX/PDF/MD) — word/page count, heading lists, whole-document summaries and exhaustive extraction, with an explicit refusal above a 24k-char cap.
+- Text-to-SQL — natural language → SQL against a connected Postgres/MySQL/SQLite database, over a read-only connection with a statement timeout and row cap.
+- Section-aware chunking (DOCX/Markdown) and scanned-PDF detection (rejected at upload, no OCR).
 
 ## Tech stack
 
-**Backend:** Python, FastAPI, SQLAlchemy (SQLite by default; Postgres/MySQL supported), JWT auth (python-jose, passlib, bcrypt), LangChain, FAISS (`faiss-cpu`), BM25 (`rank_bm25`), sentence-transformers, Groq (LLM inference), pandas, pypdf, python-docx
+**Backend:** Python, FastAPI, SQLAlchemy (SQLite default; Postgres/MySQL supported), JWT (python-jose, passlib/bcrypt), slowapi, LangChain, FAISS (`faiss-cpu`), BM25 (`rank_bm25`), sentence-transformers, Groq, pandas, pypdf, python-docx, cryptography (Fernet).
 
-**Frontend:** React (Vite), Tailwind CSS, axios, react-router-dom, react-markdown
+**Frontend:** React 18 (Vite), Tailwind CSS, axios, react-router-dom, react-markdown.
 
-## Supported file types
+Exact pinned versions: [docs/03-TECHNICAL-SPECIFICATION.md](docs/03-TECHNICAL-SPECIFICATION.md).
 
-PDF · DOCX · CSV · TXT · Markdown
+## Architecture
 
-## Setup
+```mermaid
+graph LR
+  SPA["React SPA<br/>(JWT in localStorage)"] --> API["FastAPI<br/>SlowAPI + CORS"]
+  API --> DB[("App DB<br/>SQLite/Postgres")]
+  API --> CH["chain/*<br/>RAG · compute · text-to-SQL"]
+  CH --> IDX["Per-user FAISS + BM25<br/>data/vector_index/{user_id}/"]
+  CH --> GROQ["Groq API (LLM)"]
+  CH --> UDB[("User external SQL DB<br/>read-only")]
+```
 
-Assumes a clean machine with nothing installed yet.
+Details: [docs/04-ARCHITECTURE.md](docs/04-ARCHITECTURE.md).
 
-### Prerequisites
+## Quickstart
 
-- Python 3.11+
-- Node.js 18+
-- `git`
-- A free [Groq API key](https://console.groq.com/keys) (used for LLM inference)
+Prerequisites: Python 3.11+, Node 18+, a free [Groq API key](https://console.groq.com/keys).
 
-### Backend
+**Backend**
 
 ```bash
-git clone <this-repo-url>
-cd ContextIQ/backend
-
-python3 -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
-
+cd backend
+python3 -m venv venv && source venv/bin/activate     # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-
-cp ../.env.example .env
+cp ../.env.example .env      # set SECRET_KEY, DB_ENCRYPTION_KEY, GROQ_API_KEY
+uvicorn main:app --reload    # http://localhost:8000  (API docs at /docs)
 ```
 
-Edit `backend/.env` and fill in:
-
-- `SECRET_KEY` — any random string (used to sign JWTs)
-- `DB_ENCRYPTION_KEY` — generate with:
-  ```bash
-  python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
-  ```
-  Used to encrypt saved external-database connection strings at rest. Keep it stable — rotating it makes existing saved connections undecryptable.
-- `GROQ_API_KEY` — from the Groq link above
-
-`DATABASE_URL` defaults to a local SQLite file (`sqlite:///./contextiq.db`) and needs no setup. `FRONTEND_ORIGIN` defaults to `http://localhost:5173`, matching the frontend dev server below.
-
-Run the API:
+Generate a `DB_ENCRYPTION_KEY`:
 
 ```bash
-uvicorn main:app --reload
+python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
 ```
 
-The backend serves at `http://localhost:8000` (interactive API docs at `/docs`).
-
-### Frontend
+**Frontend**
 
 ```bash
-cd ContextIQ/frontend
+cd frontend
 npm install
-cp .env.example .env   # VITE_API_BASE_URL defaults to http://localhost:8000
-npm run dev
+cp .env.example .env         # VITE_API_BASE_URL defaults to http://localhost:8000
+npm run dev                   # http://localhost:5173
 ```
 
-The frontend serves at `http://localhost:5173`.
-
-### Running tests
+**Tests**
 
 ```bash
-cd ContextIQ
-pytest backend/tests/ -v
+pytest backend/tests/ -v      # 58 passing
 ```
 
-## Known limitation: scanned PDFs
-
-ContextIQ does not currently perform OCR. If you upload a scanned/image-based PDF (one with no extractable text layer), the upload is rejected with a clear `422` error explaining why, rather than silently indexing an empty document you'd only discover later when every question about it came back "I couldn't find anything relevant." Adding OCR support would require the system `tesseract` binary (not pip-installable) plus the `pytesseract` and `PyMuPDF` packages — none of which are part of this project yet. See `backend/loaders/document_loader.py` for the detection logic and exact error message.
+Docker Compose and the (planned) hosted deployment: [docs/14-DEPLOYMENT.md](docs/14-DEPLOYMENT.md).
 
 ## Evaluation
 
-Retrieval quality is benchmarked in [`eval/`](eval/): Precision@K, Recall@K, MRR, and MAP, plus p50/p95 latency, computed for three retriever configurations — FAISS-only, BM25-only, and the hybrid Ensemble — against a labeled question set spanning all five supported file types, including questions specifically designed to need exact numbers or rare terms (the case hybrid retrieval exists for). BM25-only measurably underperforms on exact-value lookups that the hybrid retriever recovers; see [`eval/results_baseline_k4.md`](eval/results_baseline_k4.md) for the full breakdown and [`eval/weight_tuning_summary.md`](eval/weight_tuning_summary.md) for an ensemble-weight sensitivity sweep. The eval set and methodology (including its current caveats and known limitations) are documented in [`eval/eval_set.json`](eval/eval_set.json) and [`eval/README.md`](eval/README.md) — read those before citing any numbers, as they explain exactly what the benchmark does and doesn't demonstrate.
+Retrieval-only benchmark (`eval/`) — FAISS-only vs BM25-only vs Hybrid, K=4, 28 labeled questions.
 
-## Deployment
+| Metric | FAISS-only | BM25-only | Ensemble (Hybrid) |
+|---|---|---|---|
+| Precision@K | 25.0% | 22.3% | 25.0% |
+| Recall@K | 100.0% | 89.3% | 100.0% |
+| MRR | 0.964 | 0.869 | 0.893 |
+| MAP | 0.964 | 0.869 | 0.893 |
+| Latency p50 (ms) | 12.2 | 0.7 | 12.4 |
 
-Planned (Render + Vercel), instructions coming soon.
+BM25-only misses three exact-value questions the hybrid retriever recovers (+12.0% recall vs BM25-only). A weight sweep (0.5–0.8 FAISS) showed no generalizable improvement over 0.5/0.5.
+
+> **Caveat:** the corpus is a synthetic 10-document / ~17-chunk fixture. These numbers illustrate hybrid-vs-single-retriever behavior, **not** production-scale performance. See [docs/03-TECHNICAL-SPECIFICATION.md §7](docs/03-TECHNICAL-SPECIFICATION.md) and `eval/README.md`.
+
+## Documentation
+
+| # | Doc |
+|---|---|
+| 01 | [Product Requirements](docs/01-PRODUCT-REQUIREMENTS.md) |
+| 02 | [Product Specification](docs/02-PRODUCT-SPECIFICATION.md) |
+| 03 | [Technical Specification](docs/03-TECHNICAL-SPECIFICATION.md) |
+| 04 | [Architecture](docs/04-ARCHITECTURE.md) |
+| 05 | [Data Model](docs/05-DATA-MODEL.md) |
+| 06 | [API Specification](docs/06-API-SPECIFICATION.md) |
+| 07 | [Implementation Plan](docs/07-IMPLEMENTATION-PLAN.md) |
+| 08 | [Roadmap](docs/08-ROADMAP.md) |
+| 09 | [Decisions (ADRs)](docs/09-DECISIONS.md) |
+| 10 | [Changelog](docs/10-CHANGELOG.md) |
+| 11 | [Checkpoint](docs/11-CHECKPOINT.md) |
+| 12 | [Testing](docs/12-TESTING.md) |
+| 13 | [Security](docs/13-SECURITY.md) |
+| 14 | [Deployment](docs/14-DEPLOYMENT.md) |
+| 15 | [Contributing](docs/15-CONTRIBUTING.md) |
+| 16 | [Style Guide](docs/16-STYLEGUIDE.md) |
+
+Full factual inventory: [docs/PROJECT-AUDIT.md](docs/PROJECT-AUDIT.md).
+
+## Current limitations
+
+Honest, documented gaps (full list in [docs/13-SECURITY.md](docs/13-SECURITY.md) and [docs/08-ROADMAP.md](docs/08-ROADMAP.md)):
+
+- No OCR — scanned/image PDFs are rejected at upload (not silently indexed empty).
+- No PDF table extraction; DOCX page count deliberately not reported (no authoritative value).
+- Database-query history is session-only; conversation titles use a client-side heuristic.
+- Schema is created via `create_all` — no Alembic migrations yet.
+- No CI; deployment to a hosting provider is planned, not implemented.
+- Retrieval eval runs on a small synthetic corpus (see caveat above).
+- Security: JWT is stored in `localStorage` (XSS trade-off); text-to-SQL validation is regex-level, backed by a read-only connection as the real write guard.
+
+## Author
+
+Emad Al-Qadah · qudahemad@yahoo.com · [github.com/3madQudah](https://github.com/3madQudah) · [linkedin.com/in/emadalqudah](https://www.linkedin.com/in/emadalqudah)

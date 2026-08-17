@@ -33,6 +33,7 @@ class DatabaseConnection(Base):
     name = Column(String, nullable=False)
     db_type = Column(String, nullable=False)  # "postgresql" | "mysql" | "sqlite"
     encrypted_connection_string = Column(String, nullable=False)
-    created_at = Column(DateTime, default=_utcnow)
+    # timezone=True: see auth/models.py's User.created_at for why.
+    created_at = Column(DateTime(timezone=True), default=_utcnow)
 
     user = relationship("User", back_populates="database_connections")

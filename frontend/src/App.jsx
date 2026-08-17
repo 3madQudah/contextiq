@@ -9,6 +9,9 @@ import DatabaseQuery from "./pages/DatabaseQuery.jsx";
 import Documents from "./pages/Documents.jsx";
 import Landing from "./pages/Landing.jsx";
 import Login from "./pages/Login.jsx";
+import DatabasesInfo from "./pages/marketing/Databases.jsx";
+import Docs from "./pages/marketing/Docs.jsx";
+import Product from "./pages/marketing/Product.jsx";
 import Register from "./pages/Register.jsx";
 
 function App() {
@@ -19,6 +22,12 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
       </Route>
+
+      {/* Content pages, not auth gates — reachable whether or not the
+          visitor is logged in (e.g. a signed-in user checking /docs). */}
+      <Route path="/product" element={<Product />} />
+      <Route path="/databases" element={<DatabasesInfo />} />
+      <Route path="/docs" element={<Docs />} />
 
       <Route element={<ProtectedRoute />}>
         <Route path="/app" element={<AppLayout />}>

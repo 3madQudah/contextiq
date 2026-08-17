@@ -18,6 +18,9 @@ from api.documents_routes import router as documents_router
 # Importing models registers them on Base.metadata before create_all() runs below.
 from auth import chat_models, db_connection_models, models  # noqa: F401
 from auth.database import Base, engine
+from utils.rate_limit import limiter, rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 
 load_dotenv()
 
@@ -26,6 +29,10 @@ Base.metadata.create_all(bind=engine)
 FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:5173")
 
 app = FastAPI(title="ContextIQ")
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
 
 app.add_middleware(
     CORSMiddleware,

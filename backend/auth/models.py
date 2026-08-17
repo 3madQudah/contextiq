@@ -20,7 +20,11 @@ class User(Base):
     last_name = Column(String, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    # timezone=True: every value written here is datetime.now(timezone.utc)
+    # (tz-aware). A plain DateTime maps to Postgres's TIMESTAMP WITHOUT TIME
+    # ZONE, which silently drops that -- harmless on SQLite (no native
+    # datetime type either way) but worth being explicit about for Postgres.
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     # "Conversation" is defined in auth/chat_models.py — resolved by name against
     # the shared declarative Base registry, so no import-time circular dependency.

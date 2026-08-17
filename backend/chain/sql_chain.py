@@ -25,7 +25,7 @@ import time
 from contextlib import contextmanager
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 from urllib.parse import quote
 
 from dotenv import load_dotenv
@@ -64,7 +64,22 @@ class SQLValidationError(Exception):
 
 
 class SQLExecutionTimeout(Exception):
-    """Raised when the query was cancelled for exceeding the statement timeout."""
+    """Raised when the query was cancelled for exceeding *our own configured*
+    statement timeout (see DEFAULT_STATEMENT_TIMEOUT_SECONDS) -- the DB is
+    reachable and healthy, it just didn't finish in time. Caught by the route
+    and turned into a 504."""
+
+
+class SQLConnectionError(Exception):
+    """Raised when the connection to the target database was lost, dropped,
+    or refused out from under us -- e.g. MySQL closing an idle session
+    ("server has gone away"), a network blip, or the host being briefly
+    unreachable. Distinct from SQLExecutionTimeout: this isn't us cancelling
+    a slow query on purpose, it's the database/network becoming unavailable
+    mid-operation. Caught by the route and turned into a 503, and always
+    logged (see _classify_operational_error) so the specific driver-level
+    error is visible in server logs instead of collapsing into an opaque
+    generic failure."""
 
 
 # --- 1. Connection testing (used by POST /api/databases before saving) -----
@@ -127,6 +142,98 @@ def _sqlite_readonly_url(url) -> str:
     return f"sqlite:///file:{quote(db_path)}?mode=ro&uri=true"
 
 
+# --- 2b. OperationalError classification -------------------------------------
+#
+# Shared by get_schema_snapshot() (section 3) and execute_query() (section 6)
+# -- any live call to the target database can hit either a timeout WE imposed
+# on purpose (SET statement_timeout / MAX_EXECUTION_TIME, see _readonly_
+# connection) or the connection being lost/refused out from under us, and both
+# were previously indistinguishable from any other OperationalError: a bare
+# `raise` that propagated up to the /ask route's catch-all `except Exception`
+# and came out the other end as an opaque 502 with nothing in the logs.
+#
+# _TIMEOUT_MARKERS matches OUR OWN timeout firing (Postgres's "canceling
+# statement due to statement timeout", SQLite's "interrupted" from the
+# progress handler in _readonly_connection, the literal "max_execution_time"
+# MySQL includes in its error text for that case) -- the database is healthy,
+# the query just didn't finish in time.
+#
+# _MYSQL_CONNECTION_LOST_* matches the connection itself being dropped/
+# refused, which is a materially different failure (network blip, the server
+# closing an idle session, a brief outage) and was the specific gap reported
+# against this module: none of the strings below overlap with _TIMEOUT_MARKERS,
+# so a genuine MySQL "gone away" error was falling through the timeout check
+# and being re-raised as a plain OperationalError -- landing on the generic
+# 502 path instead of a clean, correctly-labeled error.
+_TIMEOUT_MARKERS = ("timeout", "interrupted", "max_execution_time", "canceling statement")
+
+# errno reference (PyMySQL / MySQL C client -- these are stable, documented
+# MySQL client error codes, not something PyMySQL invented):
+#   2003 = CR_CONN_HOST_ERROR              "Can't connect to MySQL server"
+#   2006 = CR_SERVER_GONE_ERROR            "MySQL server has gone away"
+#   2013 = CR_SERVER_LOST                  "Lost connection to MySQL server during query"
+#   4031 = ER_CLIENT_INTERACTION_TIMEOUT   MySQL 8+ server-side idle disconnect
+_MYSQL_CONNECTION_LOST_ERRNOS = {2003, 2006, 2013, 4031}
+_MYSQL_CONNECTION_LOST_MARKERS = (
+    "server has gone away",
+    "lost connection to mysql server",
+    "can't connect to mysql server",
+    "server closed the connection unexpectedly",
+)
+
+
+def _mysql_errno(exc: OperationalError) -> Optional[int]:
+    """Best-effort extraction of PyMySQL's numeric error code. PyMySQL raises
+    exceptions shaped like `OperationalError(errno, message)`; `.orig` is the
+    raw DBAPI exception SQLAlchemy wraps, so `.orig.args[0]` is the errno when
+    PyMySQL is the driver. Falls back to message-string matching (below) when
+    that shape isn't there -- e.g. a different driver, or a non-DBAPI error."""
+    orig = exc.orig
+    if orig is not None and getattr(orig, "args", None):
+        first = orig.args[0]
+        if isinstance(first, int):
+            return first
+    return None
+
+
+def _classify_operational_error(db_type: str, exc: OperationalError) -> Exception:
+    """Map a raw OperationalError to the specific exception callers should
+    raise instead: SQLConnectionError if it looks like the connection was
+    lost/refused (MySQL-specific detection, by errno first and message text
+    second -- see the tables above), SQLExecutionTimeout if it matches our own
+    configured timeout firing, or `exc` itself unchanged when neither is
+    recognized (callers re-raise that as a bare `raise` to preserve the
+    original traceback).
+
+    MySQL-only for the connection-lost case, deliberately: these errno/message
+    signatures are specific to the MySQL client protocol. Postgres and SQLite
+    have their own distinct failure shapes that aren't covered by this check
+    (Postgres connection loss typically raises a different exception class
+    entirely, e.g. sqlalchemy.exc.DBAPIError/InterfaceError rather than
+    OperationalError) -- extending this to those drivers is future work, not
+    something to fake by reusing MySQL's marker strings against them.
+    """
+    message = str(exc.orig) if exc.orig else str(exc)
+    lowered = message.lower()
+
+    if db_type == "mysql" and (
+        _mysql_errno(exc) in _MYSQL_CONNECTION_LOST_ERRNOS
+        or any(marker in lowered for marker in _MYSQL_CONNECTION_LOST_MARKERS)
+    ):
+        return SQLConnectionError(
+            "Lost connection to the database while running the query. This can "
+            "happen if the connection was idle too long or was dropped "
+            "mid-query. Please try again."
+        )
+
+    if any(marker in lowered for marker in _TIMEOUT_MARKERS):
+        return SQLExecutionTimeout(
+            "Query exceeded the statement timeout and was cancelled."
+        )
+
+    return exc
+
+
 # --- 3. Schema introspection (cached briefly per connection) ---------------
 
 _schema_cache: Dict[int, Tuple[float, Dict[str, List[Tuple[str, str]]]]] = {}
@@ -148,6 +255,15 @@ def get_schema_snapshot(
             table_name: [(col["name"], str(col["type"])) for col in inspector.get_columns(table_name)]
             for table_name in inspector.get_table_names()
         }
+    except OperationalError as exc:
+        classified = _classify_operational_error(db_type, exc)
+        if classified is not exc:
+            logger.warning(
+                "sql_chain: %s during schema introspection (connection_id=%s, db_type=%s): %s",
+                type(classified).__name__, connection_id, db_type, classified,
+            )
+            raise classified from exc
+        raise
     finally:
         engine.dispose()
 
@@ -327,9 +443,6 @@ def _readonly_connection(db_type: str, connection_string: str, timeout_seconds: 
         engine.dispose()
 
 
-_TIMEOUT_MARKERS = ("timeout", "interrupted", "max_execution_time", "canceling statement")
-
-
 def _serialize_value(value):
     if isinstance(value, (datetime, date)):
         return value.isoformat()
@@ -369,11 +482,13 @@ def execute_query(
             columns = list(result.keys())
             raw_rows = result.fetchall()
     except OperationalError as exc:
-        message = str(exc.orig) if exc.orig else str(exc)
-        if any(marker in message.lower() for marker in _TIMEOUT_MARKERS):
-            raise SQLExecutionTimeout(
-                "Query exceeded the statement timeout and was cancelled."
-            ) from exc
+        classified = _classify_operational_error(db_type, exc)
+        if classified is not exc:
+            logger.warning(
+                "sql_chain: %s during query execution (db_type=%s): %s",
+                type(classified).__name__, db_type, classified,
+            )
+            raise classified from exc
         raise
 
     truncated = False
@@ -413,23 +528,81 @@ def summarize_answer(question: str, columns: List[str], rows: List[list], trunca
 def run_sql_chain(connection: DatabaseConnection, question: str) -> dict:
     """Run the full pipeline for an already ownership-verified connection.
 
-    Raises SQLValidationError (-> 400, before anything touches the database)
-    or SQLExecutionTimeout (-> 504) for the route to translate into an HTTP
-    response; any other exception is a genuine execution failure (-> 502).
-    """
-    plaintext = decrypt_connection_string(connection.encrypted_connection_string)
+    Raises SQLValidationError (-> 400, before anything touches the database),
+    SQLConnectionError (-> 503, the database was unreachable/dropped the
+    connection), or SQLExecutionTimeout (-> 504, our own configured statement
+    timeout fired) for the route to translate into an HTTP response; any other
+    exception is an unclassified failure (-> 502).
 
-    schema_snapshot = get_schema_snapshot(connection.id, connection.db_type, plaintext)
+    Every stage is wrapped separately and logged with `logger.exception`
+    before being re-raised (not swallowed -- the route still sees the same
+    exception and still maps it the same way). This exists specifically so a
+    502/503/504 has a traceback in the server logs naming exactly which stage
+    failed, instead of the route's top-level catch being the only place an
+    error is ever observed. In particular this distinguishes the two Groq LLM
+    calls (SQL generation, result summarization) from the two live-database
+    calls (schema introspection, query execution) -- a transient Groq failure
+    and a transient MySQL connection drop previously both surfaced as an
+    identical, unlogged, generic 502 with no way to tell them apart.
+    """
+    try:
+        plaintext = decrypt_connection_string(connection.encrypted_connection_string)
+    except Exception:
+        logger.exception(
+            "sql_chain: failed to decrypt stored connection string "
+            "(connection_id=%s) -- likely DB_ENCRYPTION_KEY mismatch/rotation",
+            connection.id,
+        )
+        raise
+
+    try:
+        schema_snapshot = get_schema_snapshot(connection.id, connection.db_type, plaintext)
+    except (SQLExecutionTimeout, SQLConnectionError):
+        # Already logged (as a warning, with classification) inside
+        # get_schema_snapshot/_classify_operational_error -- just propagate.
+        raise
+    except Exception:
+        logger.exception(
+            "sql_chain: schema introspection failed (connection_id=%s, db_type=%s)",
+            connection.id, connection.db_type,
+        )
+        raise
     schema_text = format_schema_for_prompt(schema_snapshot)
 
-    raw_sql = generate_sql(connection.db_type, schema_text, question)
+    try:
+        raw_sql = generate_sql(connection.db_type, schema_text, question)
+    except Exception:
+        logger.exception(
+            "sql_chain: SQL generation via Groq failed (connection_id=%s, model=%s)",
+            connection.id, GROQ_MODEL_NAME,
+        )
+        raise
+
     cleaned_sql, has_own_limit = validate_sql(raw_sql)
 
-    columns, rows, row_count, truncated, displayed_sql = execute_query(
-        connection.db_type, plaintext, cleaned_sql, has_own_limit
-    )
+    try:
+        columns, rows, row_count, truncated, displayed_sql = execute_query(
+            connection.db_type, plaintext, cleaned_sql, has_own_limit
+        )
+    except (SQLExecutionTimeout, SQLConnectionError):
+        # Already logged (as a warning, with classification) inside
+        # execute_query/_classify_operational_error -- just propagate.
+        raise
+    except Exception:
+        logger.exception(
+            "sql_chain: query execution failed (connection_id=%s, db_type=%s)",
+            connection.id, connection.db_type,
+        )
+        raise
 
-    answer = summarize_answer(question, columns, rows, truncated)
+    try:
+        answer = summarize_answer(question, columns, rows, truncated)
+    except Exception:
+        logger.exception(
+            "sql_chain: result summarization via Groq failed (connection_id=%s, model=%s)",
+            connection.id, GROQ_MODEL_NAME,
+        )
+        raise
 
     return {
         "answer": answer,

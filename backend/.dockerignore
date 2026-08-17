@@ -1,0 +1,27 @@
+# Runtime data — must never be baked into the image. This is exactly the
+# directory docker-compose.yml mounts a named volume over at /app/data; if it
+# were copied in by `COPY . .` in the Dockerfile, a rebuild would silently
+# reset it back to whatever existed on disk at build time (and, if the
+# volume mount is ever removed, uploaded files/indexes/the SQLite DB would
+# be sitting inside the image layer, not actually persisted anywhere real).
+data/
+contextiq.db
+*.db
+*.sqlite
+*.sqlite3
+
+# Secrets — never bake credentials into an image; docker-compose.yml injects
+# these at container-start via env_file/environment instead.
+.env
+.env.*
+!.env.example
+
+# Local dev / VCS / editor cruft
+venv/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.git/
+.gitignore
+.DS_Store

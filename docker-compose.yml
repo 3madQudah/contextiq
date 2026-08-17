@@ -1,0 +1,87 @@
+# ContextIQ — local/production-style container stack.
+#
+# Usage:
+#   cp .env.example .env   # then fill in SECRET_KEY, DB_ENCRYPTION_KEY, GROQ_API_KEY
+#   docker-compose up --build
+#
+# Reads all backend secrets/config from ./.env via env_file (SECRET_KEY,
+# ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, DATABASE_URL, DB_ENCRYPTION_KEY,
+# GROQ_API_KEY, FRONTEND_ORIGIN — every variable .env.example lists). Nothing
+# below hardcodes a real secret value.
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      # Override, not passthrough: .env.example's DATABASE_URL default
+      # (sqlite:///./contextiq.db) is a path *relative to the process's cwd*
+      # -- correct for local `uvicorn` run from backend/, but inside this
+      # container that resolves to /app/contextiq.db, which is OUTSIDE the
+      # backend_data volume mounted below at /app/data. Left alone, the
+      # SQLite file would live in the container's writable layer and vanish
+      # on every rebuild/recreate -- exactly the persistence bug this stack
+      # exists to avoid. This always points inside the volume instead,
+      # unless DOCKER_DATABASE_URL is set in .env (e.g. to a Postgres URL --
+      # see .env.example's "Docker Compose" section), in which case that
+      # takes over. Postgres/MySQL URLs don't have this relative-path
+      # problem at all, so they're passed through untouched via env_file
+      # above and never need DOCKER_DATABASE_URL.
+      DATABASE_URL: ${DOCKER_DATABASE_URL:-sqlite:////app/data/contextiq.db}
+    volumes:
+      # backend/data/ (raw uploads, per-user FAISS indexes, BM25 pickles) and
+      # the SQLite file above both live here -- named volume, not a bind
+      # mount, so it survives `docker-compose down` / image rebuilds and
+      # isn't tied to a specific host path. See backend/Dockerfile and
+      # backend/.dockerignore for why none of this is baked into the image.
+      - backend_data:/app/data
+    ports:
+      # Published on the host because the frontend's JS calls the backend
+      # directly from the *browser* (see VITE_API_BASE_URL below), not
+      # through the Docker network -- the browser has no way to resolve
+      # Docker's internal service-name DNS.
+      - "8000:8000"
+    networks:
+      - contextiq
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # Baked into the JS bundle at build time (see frontend/Dockerfile's
+        # comment on why this must be a browser-reachable URL, e.g.
+        # http://localhost:8000 -- matching the backend's published port
+        # above -- rather than the internal Docker network name
+        # "http://backend:8000"). Changing this requires a rebuild, not just
+        # a container restart -- it's compiled into the static JS, there's
+        # no runtime env var to flip.
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
+    ports:
+      # 5173 to match the Vite dev server's usual port (docs/muscle memory
+      # stay consistent whether you're running `npm run dev` or this
+      # container) -- nginx itself listens on 80 inside the container.
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - contextiq
+    restart: unless-stopped
+
+networks:
+  contextiq:
+    driver: bridge
+
+volumes:
+  backend_data:

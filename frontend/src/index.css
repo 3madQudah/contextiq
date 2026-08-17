@@ -19,6 +19,16 @@
   --color-accent-foreground: 255 255 255;
   --color-danger: 220 38 38;
   --color-danger-foreground: 255 255 255;
+  --color-success: 22 163 74;
+  /* Aurora accents: decorative only (background glow/blobs), never text. */
+  --color-aurora-violet: 168 85 247;
+  --color-aurora-cyan: 34 211 238;
+  /* Pipeline diagram (Landing hero) source-pill hues — see
+     PipelineDiagram.jsx. label-on-surface contrast: 8.89:1 light, 9.65:1
+     dark (WCAG AA text floor is 4.5:1). */
+  --color-pipeline-surface: 238 237 254;
+  --color-pipeline-border: 127 119 221;
+  --color-pipeline-label: 60 52 137;
 }
 
 .dark {
@@ -32,6 +42,12 @@
   --color-accent-foreground: 9 9 11;
   --color-danger: 248 113 113;
   --color-danger-foreground: 9 9 11;
+  --color-success: 74 222 128;
+  --color-aurora-violet: 192 132 252;
+  --color-aurora-cyan: 103 232 249;
+  --color-pipeline-surface: 34 30 58;
+  --color-pipeline-border: 148 140 240;
+  --color-pipeline-label: 199 195 255;
 }
 
 * {
@@ -67,6 +83,93 @@ body {
 *::-webkit-scrollbar-thumb {
   background-color: rgb(var(--color-border));
   border-radius: 8px;
+}
+
+/* Theme toggle shouldn't snap — cross-fade the token-driven surfaces instead
+   of hard-cutting to the new theme. Scoped to the actual color-token
+   utilities (not a wildcard) so it doesn't add a transition to every
+   className containing "bg-"/"border-". */
+body,
+.bg-bg,
+.bg-surface,
+.bg-surface-hover,
+.border-border,
+.text-foreground,
+.text-muted {
+  transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
+}
+
+/* Glassmorphism surface: translucent + blurred, used for elevated panels
+   (composer, cards, modals, dropdowns) instead of a flat opaque surface.
+   Falls back gracefully wherever backdrop-filter isn't supported, since
+   bg-surface/70 alone still reads as a surface. */
+.glass-panel {
+  @apply bg-surface/70 backdrop-blur-xl;
+  background-image: linear-gradient(
+    to bottom right,
+    rgb(var(--color-surface) / 0.6),
+    rgb(var(--color-surface) / 0.3)
+  );
+}
+
+/* Decorative aurora glow blobs (see AuroraBackground.jsx). Pure CSS
+   animation — outside motion/react's reduced-motion handling, so it's
+   disabled explicitly below. */
+.aurora-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+/* Loading skeletons: a slow horizontal shimmer sweep over a muted block. */
+.skeleton {
+  @apply bg-surface-hover;
+  background-image: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgb(var(--color-border) / 0.6) 50%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+}
+
+/* Pipeline diagram (Landing hero): traveling dash pulses + hub breathing +
+   ripple all loop forever via plain CSS instead of motion/react — see
+   PipelineDiagram.jsx for why. transform-box: fill-box makes the scale
+   keyframes (tailwind.config.js) apply around each element's own center
+   instead of the SVG viewport origin. */
+.pipeline-pulse,
+.pipeline-hub-breathe,
+.pipeline-ripple {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-orb,
+  .skeleton,
+  .animate-pipeline-flow,
+  .animate-pipeline-hub,
+  .animate-pipeline-ripple,
+  .animate-pipeline-line-in,
+  .animate-pipeline-pill-in,
+  .animate-pipeline-card-in {
+    animation: none !important;
+  }
+  .animate-pipeline-flow,
+  .animate-pipeline-ripple {
+    opacity: 0 !important;
+  }
+  body,
+  .bg-bg,
+  .bg-surface,
+  .bg-surface-hover,
+  .border-border,
+  .text-foreground,
+  .text-muted {
+    transition: none !important;
+  }
 }
 
 /* Markdown content inside assistant chat messages. */

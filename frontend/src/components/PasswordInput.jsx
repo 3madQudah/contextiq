@@ -1,14 +1,22 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 
-export default function PasswordInput({ label, error, hint, className = "", id, ...props }) {
+export default function PasswordInput({
+  label,
+  error,
+  hint,
+  className = "",
+  labelClassName = "text-sm text-muted",
+  id,
+  ...props
+}) {
   const [visible, setVisible] = useState(false);
   const inputId = id || props.name;
 
   return (
     <div className={className}>
       {label && (
-        <label htmlFor={inputId} className="mb-1.5 block text-sm text-muted">
+        <label htmlFor={inputId} className={`mb-1.5 block ${labelClassName}`}>
           {label}
         </label>
       )}

@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
+import AuthBrand from "../components/landing/AuthBrand.jsx";
 import Button from "../components/Button.jsx";
-import Logo from "../components/Logo.jsx";
 import PasswordInput from "../components/PasswordInput.jsx";
 import TextInput from "../components/TextInput.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { getErrorMessage } from "../services/api.js";
+
+const LABEL_CLASS = "text-sm font-semibold text-foreground";
 
 export default function Login() {
   const { login } = useAuth();
@@ -32,18 +34,23 @@ export default function Login() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-bg px-4">
-      <Logo className="mb-8" />
-      <div className="w-full max-w-[360px] rounded-lg border border-border bg-surface p-6">
-        <h1 className="mb-6 text-lg font-medium text-foreground">Log in</h1>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-surface-hover px-4">
+      <AuthBrand className="mb-8" />
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <div className="w-full max-w-[360px] rounded-xl border border-border bg-surface p-6">
+        <h1 className="text-center text-lg font-bold text-foreground">Welcome back</h1>
+        <p className="mt-1.5 text-center text-sm text-muted">
+          Log in to keep chatting with your documents.
+        </p>
+
+        <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
           <TextInput
             label="Email"
             type="email"
             name="email"
             autoComplete="email"
             required
+            labelClassName={LABEL_CLASS}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -52,6 +59,7 @@ export default function Login() {
             name="password"
             autoComplete="current-password"
             required
+            labelClassName={LABEL_CLASS}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -62,7 +70,7 @@ export default function Login() {
             </div>
           )}
 
-          <Button type="submit" loading={loading} className="mt-1 w-full">
+          <Button type="submit" variant="invert" loading={loading} className="mt-1 w-full">
             {loading ? "Logging in…" : "Log in"}
           </Button>
         </form>
@@ -70,8 +78,8 @@ export default function Login() {
 
       <p className="mt-6 text-sm text-muted">
         Don't have an account?{" "}
-        <Link to="/register" className="text-accent hover:underline">
-          Create one
+        <Link to="/register" className="font-bold text-foreground hover:underline">
+          Sign up
         </Link>
       </p>
     </div>

@@ -10,6 +10,7 @@ Ownership enforcement mirrors api.conversations_routes: every route taking
 or foreign id always 404s.
 """
 
+import logging
 from datetime import datetime
 from typing import List, Literal
 
@@ -22,12 +23,15 @@ from auth.database import get_db
 from auth.db_connection_models import DatabaseConnection
 from auth.models import User
 from chain.sql_chain import (
+    SQLConnectionError,
     SQLExecutionTimeout,
     SQLValidationError,
     run_sql_chain,
     test_connection,
 )
 from utils.crypto import encrypt_connection_string
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -128,7 +132,29 @@ def ask_database(
         )
     except SQLExecutionTimeout as exc:
         raise HTTPException(status_code=status.HTTP_504_GATEWAY_TIMEOUT, detail=str(exc))
+    except SQLConnectionError as exc:
+        # Distinct from the timeout above: this is the connection being
+        # lost/refused (e.g. MySQL's "server has gone away" after an idle
+        # period), not our own statement timeout firing on purpose. 503
+        # ("try again shortly") reads more accurately to the caller than a
+        # generic 502 -- already logged with the underlying driver error
+        # inside chain/sql_chain.py at the point it was classified.
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc))
     except Exception as exc:
+        # Anything else is unclassified -- chain/sql_chain.run_sql_chain()
+        # already logged it (with a stage-specific message: schema
+        # introspection, Groq SQL generation, execution, or Groq
+        # summarization) via logger.exception, so the traceback is in the
+        # logs. Log again here too, at the route boundary, as a safety net
+        # for the few steps in this file that aren't inside run_sql_chain
+        # (e.g. a DBQueryResponse(**result) validation error would NOT land
+        # here, since it happens outside this try block -- only run_sql_chain
+        # failures do).
+        logger.exception(
+            "databases_routes: unclassified failure answering question "
+            "(connection_id=%s, db_type=%s)",
+            connection.id, connection.db_type,
+        )
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="Failed to answer the question against this database.",

@@ -30,8 +30,9 @@ class Conversation(Base):
         Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
     title = Column(String, nullable=False)
-    created_at = Column(DateTime, default=_utcnow)
-    updated_at = Column(DateTime, default=_utcnow, onupdate=_utcnow)
+    # timezone=True: see auth/models.py's User.created_at for why.
+    created_at = Column(DateTime(timezone=True), default=_utcnow)
+    updated_at = Column(DateTime(timezone=True), default=_utcnow, onupdate=_utcnow)
 
     user = relationship("User", back_populates="conversations")
     messages = relationship(
@@ -57,6 +58,6 @@ class Message(Base):
     role = Column(String, nullable=False)
     content = Column(Text, nullable=False)
     sources = Column(JSON, nullable=True)
-    created_at = Column(DateTime, default=_utcnow)
+    created_at = Column(DateTime(timezone=True), default=_utcnow)
 
     conversation = relationship("Conversation", back_populates="messages")

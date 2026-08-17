@@ -1,4 +1,5 @@
 import { Database, Files, LogOut, Pencil, Plus, Trash2 } from "lucide-react";
+import { motion } from "motion/react";
 import { useState } from "react";
 import { NavLink, useMatch, useNavigate } from "react-router-dom";
 
@@ -77,14 +78,21 @@ export default function Sidebar({ onNavigate = () => {} }) {
       </div>
 
       <div className="px-3">
-        <button
+        {/* Fixed (non-theme-adaptive) white/black outline — same "Get
+            started" treatment used on the public site, not the shared
+            Button component's `invert` variant, since that variant's base
+            classes hardcode font-medium and this needs bold text. */}
+        <motion.button
           type="button"
           onClick={handleNewChat}
-          className="flex w-full items-center gap-2 rounded-md border border-border px-3 py-2 text-sm text-foreground transition-colors hover:bg-surface-hover"
+          whileHover={{ scale: 1.015 }}
+          whileTap={{ scale: 0.96 }}
+          transition={{ type: "spring", stiffness: 420, damping: 30 }}
+          className="flex w-full items-center justify-center gap-2 rounded-md border-[1.5px] border-black bg-white px-3 py-2 text-sm font-bold text-black transition-colors hover:bg-zinc-50"
         >
-          <Plus size={16} strokeWidth={1.5} />
+          <Plus size={16} strokeWidth={2} />
           New chat
-        </button>
+        </motion.button>
       </div>
 
       <div className="mt-4 flex-1 overflow-y-auto px-3">
@@ -197,7 +205,7 @@ export default function Sidebar({ onNavigate = () => {} }) {
       </div>
 
       <div className="flex items-center gap-2 border-t border-border px-3 py-3">
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent/10 text-xs font-medium text-accent">
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-black text-xs font-medium text-white">
           {getInitials(user)}
         </div>
         <span className="flex-1 truncate text-sm text-foreground">{getDisplayName(user)}</span>

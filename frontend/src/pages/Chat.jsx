@@ -1,3 +1,4 @@
+import { IconBook2, IconSearch } from "@tabler/icons-react";
 import { MessageSquarePlus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -144,8 +145,23 @@ export default function Chat() {
   const showEmptyState = !conversationId && messages.length === 0 && !sending;
 
   return (
-    <div className="flex h-full flex-col">
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-6 sm:px-8">
+    <div className="relative flex h-full flex-col">
+      {/* Decorative watermark — "searching within documents". Positioned
+          against the FULL chat panel (not the narrower max-w-2xl text
+          column below), centered horizontally and ~60% down vertically,
+          so it doesn't sit dead-center behind the heading. Very low
+          opacity, pointer-events: none, and behind everything else
+          (z-0 here vs z-10 on both the scroll area and the composer). */}
+      {showEmptyState && (
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+          <div className="absolute left-1/2 top-[60%] h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2">
+            <IconBook2 size={360} className="absolute inset-0 text-foreground/[0.07]" />
+            <IconSearch size={130} className="absolute -bottom-2 -right-2 text-accent/10" />
+          </div>
+        </div>
+      )}
+
+      <div ref={scrollRef} className="relative z-10 flex-1 overflow-y-auto px-4 py-6 sm:px-8">
         <div className="mx-auto flex max-w-2xl flex-col gap-5">
           {conversationLoading && <p className="text-sm text-muted">Loading conversation…</p>}
           {conversationError && <p className="text-sm text-danger">{conversationError}</p>}
@@ -154,7 +170,7 @@ export default function Chat() {
             <div className="flex flex-col items-center gap-4 py-16 text-center">
               <MessageSquarePlus size={22} strokeWidth={1.5} className="text-muted" />
               <div>
-                <h2 className="text-base font-medium text-foreground">Start a new conversation</h2>
+                <h2 className="text-base font-bold text-foreground">Start a new conversation</h2>
                 <p className="mt-1 text-sm text-muted">Ask anything about your uploaded documents.</p>
               </div>
               <div className="flex flex-col gap-2">
@@ -179,12 +195,14 @@ export default function Chat() {
         </div>
       </div>
 
-      <Composer
-        onSend={handleSend}
-        disabled={sending}
-        activeFilter={activeFilter}
-        onClearFilter={() => setActiveFilter(null)}
-      />
+      <div className="relative z-10">
+        <Composer
+          onSend={handleSend}
+          disabled={sending}
+          activeFilter={activeFilter}
+          onClearFilter={() => setActiveFilter(null)}
+        />
+      </div>
     </div>
   );
 }
