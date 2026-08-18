@@ -1,3 +1,5 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
 # --- Web framework / API ---
 fastapi==0.135.2
 uvicorn==0.42.0
@@ -29,6 +31,10 @@ langchain-groq==1.1.3
 langchain-huggingface==1.2.2
 rank_bm25==0.2.2
 faiss-cpu==1.13.2
+# Explicit (not left transitive via sentence-transformers): pinning it here is
+# what makes the --extra-index-url above actually apply to torch specifically,
+# rather than pip resolving it on its own and grabbing the default CUDA build.
+torch==2.13.0
 sentence-transformers==5.3.0
 
 # --- Document loaders (pdf/docx/csv; .md and .txt use the stdlib + these) ---

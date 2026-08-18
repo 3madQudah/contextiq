@@ -39,6 +39,7 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 COPY requirements.txt .
+ENV PIP_EXTRA_INDEX_URL=https://download.pytorch.org/whl/cpu
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
@@ -99,4 +100,13 @@ HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=5 \
 # No --reload (that's a dev-only uvicorn flag: it watches the filesystem for
 # source changes, which is both wasted overhead and pointless in an
 # immutable container image built from a fixed source snapshot).
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+#
+# Shell-form CMD (not exec-form) so ${PORT} is expanded by the shell at
+# container start: Render assigns the listen port dynamically via $PORT, and
+# an exec-form array would pass the literal string "${PORT}" straight to
+# uvicorn instead of expanding it. Falls back to 8000 when PORT is unset
+# (local `docker run`, docker-compose). Single worker deliberately (no
+# --workers): the per-user FAISS index has no concurrency locking, so
+# multiple workers could race and corrupt it — see docs/14-DEPLOYMENT.md
+# and PROJECT-AUDIT §14.3.
+CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}
