@@ -10,6 +10,7 @@ Related: [09 — Decisions](09-DECISIONS.md) · [13 — Security](13-SECURITY.md
 
 | # | Item | Why | Source |
 |---|---|---|---|
+| N0 | **Object storage (S3 or equivalent) for uploads and indexes** | Highest-value next change: on the free-tier deploy `/app/data` (FAISS indexes, BM25 `chunks.pkl`, raw uploads) is on an ephemeral filesystem and is wiped on every redeploy/restart — moving this state off local disk is what makes the deployment actually durable | §14.3, [14 — Deployment](14-DEPLOYMENT.md) |
 | N1 | Rotate leaked secrets in `.env.example`; replace with placeholders | Real-looking `SECRET_KEY`/`DB_ENCRYPTION_KEY`/`GROQ_API_KEY` are committed | §7.10, §14.3 |
 | N2 | Remove insecure `SECRET_KEY` fallback default | Falls back to a known literal if env unset | §7.10 |
 | N3 | Add Alembic migrations | Schema is `create_all`-only; cannot evolve a populated DB | §6.3, §14.4 |

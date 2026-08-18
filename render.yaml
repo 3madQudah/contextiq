@@ -1,0 +1,74 @@
+# Render Blueprint for the ContextIQ backend (Render Docs: render.com/docs/blueprint-spec).
+#
+# TARGET: Render *free* web service + Render *free* Postgres. Deploy the
+# frontend separately on Vercel (see frontend/vercel.json and
+# docs/14-DEPLOYMENT.md).
+#
+# ─────────────────────────────────────────────────────────────────────────
+# NO PERSISTENT DISK — ACCEPTED TRADE-OFF.
+# Render free web services cannot attach a persistent disk. Everything the
+# backend writes under /app/data — per-user FAISS indexes
+# (index.faiss / index.pkl), BM25 chunks.pkl, and raw uploaded files — lives
+# on the container's ephemeral filesystem and is WIPED on every deploy and on
+# every restart/instance replacement. Only the Postgres-backed data (accounts,
+# conversations, messages, saved DB connections) survives, and only for the
+# lifetime of the free Postgres instance (see its expiry note below).
+# The fix is object storage (S3 or equivalent) for uploads and indexes —
+# tracked as the top near-term item in docs/08-ROADMAP.md.
+# ─────────────────────────────────────────────────────────────────────────
+
+services:
+  - type: web
+    name: contextiq-backend
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    envVars:
+      # DATABASE_URL is the one variable NOT set by hand: it is wired from the
+      # managed Render Postgres declared below, so it can never fall back to the
+      # cwd-relative SQLite default (which would be ephemeral — see C13 in the
+      # deployment review). auth/database.py normalizes any postgres:// prefix
+      # to postgresql:// automatically.
+      - key: DATABASE_URL
+        fromDatabase:
+          name: contextiq-db
+          property: connectionString
+      # Everything below is sync: false — enter the value in the Render
+      # dashboard. NEVER commit real secret values to this file.
+      - key: SECRET_KEY
+        sync: false
+      - key: DB_ENCRYPTION_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      # Must be set to the deployed Vercel origin so CORS admits the browser.
+      # The Vercel URL is unknown until the frontend's first deploy — see the
+      # two-pass sequence in docs/14-DEPLOYMENT.md §6.
+      - key: FRONTEND_ORIGIN
+        sync: false
+      # Optional — the app has working code defaults (see docs/03 §4); expose
+      # them so they can be overridden from the dashboard without a rebuild.
+      - key: ALGORITHM
+        sync: false
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        sync: false
+      - key: GROQ_MODEL_NAME
+        sync: false
+      - key: GROQ_REWRITE_MODEL_NAME
+        sync: false
+      # NOTE on scope: docs §3.1 also lists VITE_API_BASE_URL (frontend
+      # build-time, set in Vercel), DOCKER_DATABASE_URL (docker-compose only),
+      # TOKENIZERS_PARALLELISM (eval script only), and HF_HOME (already set by
+      # backend/Dockerfile). None of those are backend runtime config on
+      # Render, so they are intentionally omitted here rather than added as
+      # misleading no-ops.
+
+databases:
+  # Render free Postgres. Free instances are time-limited and are removed by
+  # Render after their expiry window — treat all stored data as disposable and
+  # see the persistence limitation note at the top of this file and in
+  # docs/14-DEPLOYMENT.md.
+  - name: contextiq-db
+    plan: free

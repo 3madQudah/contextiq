@@ -73,41 +73,85 @@ No DB seeding — tables are auto-created at startup via `create_all`. Only env 
 
 ---
 
-## 6. Planned — not yet implemented (Render + Vercel)
+## 6. Render (backend) + Vercel (frontend) — procedure
 
-README states deployment is "Planned (Render + Vercel), instructions coming soon" (audit §14.4). The following is a **target plan, not implemented**. No hosting config, migrations, CI, or secret-manager integration exists in the repo.
+Target: **Render free web service + Render free Postgres** for the backend, **Vercel** for the frontend. Backend hosting config lives in [`render.yaml`](../render.yaml) (repo root); frontend config in [`frontend/vercel.json`](../frontend/vercel.json). No persistent disk is used — this is an accepted trade-off (see §6.5).
 
-### 6.1 Backend (e.g. Render container)
+### 6.1 Backend on Render
 
-- [ ] Provision managed **Postgres**; set `DATABASE_URL`. The code normalizes `postgres://` → `postgresql://`, so a Heroku-style URL works.
-- [ ] **Introduce Alembic** and run migrations. Current startup uses `create_all`, which does not alter existing tables (see [ADR-006](09-DECISIONS.md)).
-- [ ] Attach a **persistent volume** for `backend/data/` (per-user FAISS indexes, `chunks.pkl`, raw uploads). Without it, indexes and uploads are lost on redeploy. Ensure the container `DATABASE_URL` points inside the persistent path if staying on SQLite.
-- [ ] Set the **env-var checklist**: `SECRET_KEY`, `DB_ENCRYPTION_KEY`, `GROQ_API_KEY`, `DATABASE_URL`, `FRONTEND_ORIGIN` (see [03 §4](03-TECHNICAL-SPECIFICATION.md)).
-- [ ] Set **`FRONTEND_ORIGIN`** to the deployed frontend origin — CORS allows a single origin only (audit §14.3).
+The [`render.yaml`](../render.yaml) blueprint declares one `docker` web service (`plan: free`, `dockerfilePath: ./backend/Dockerfile`, `dockerContext: ./backend`, `healthCheckPath: /health`) and one free Postgres database (`contextiq-db`).
 
-### 6.2 Frontend (e.g. Vercel / static host)
+1. Create a Render Blueprint from the repo (or a Docker web service pointing at `backend/Dockerfile`). The blueprint provisions the free Postgres and wires `DATABASE_URL` to it automatically.
+2. The container start command honours Render's dynamic `$PORT` (`backend/Dockerfile` uses a shell-form `CMD` with `--port ${PORT:-8000}` and `--host 0.0.0.0`). Single worker — do **not** add `--workers`; the per-user FAISS index has no concurrency locking (audit §14.3).
+3. Render uses the service's Health Check Path `/health` (`main.py:52`).
 
-- [ ] Build with the correct **`VITE_API_BASE_URL`** pointing at the deployed backend. It is compiled into the bundle at build time — a runtime change requires a rebuild (audit §14.3).
-- [ ] Serve `dist/` with SPA fallback (the provided `nginx.conf` already does `try_files … /index.html`).
+**Env vars to set in the Render dashboard** (all `sync: false` in `render.yaml` — enter values by hand, never commit them):
 
-### 6.3 Cross-cutting
+| Variable | Required | Value |
+|---|---|---|
+| `SECRET_KEY` | Yes | A fresh random secret (rotated — see §7) |
+| `DB_ENCRYPTION_KEY` | Yes | A fresh Fernet key (`python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`) |
+| `GROQ_API_KEY` | Yes | Your Groq API key |
+| `FRONTEND_ORIGIN` | Yes | The Vercel origin (set in pass 2 — see §6.4) |
+| `ALGORITHM` | No | Defaults to `HS256` in code if unset |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | No | Defaults to `60` |
+| `GROQ_MODEL_NAME` | No | Defaults to `llama-3.1-8b-instant` |
+| `GROQ_REWRITE_MODEL_NAME` | No | Defaults to `llama-3.1-8b-instant` |
 
-- [ ] Add **CI** (lint + `pytest backend/tests/`) — none exists.
-- [ ] Add an **upload size cap** and **filename sanitization** before public exposure ([13 — Security](13-SECURITY.md) S7/S8).
-- [ ] Terminate **TLS** at the edge; no HTTPS config exists beyond nginx serving static assets.
+`DATABASE_URL` is **not** entered by hand: it is wired from the Render Postgres via `fromDatabase` in the blueprint, so it can never fall back to the ephemeral SQLite default (`database.py:18`; `postgres://` is normalized to `postgresql://` automatically). Schema is created at startup via `create_all` — there are no Alembic migrations yet (see [ADR-006](09-DECISIONS.md)), which is acceptable for a single-schema demo but must be addressed before evolving a populated DB.
+
+### 6.2 Frontend on Vercel
+
+[`frontend/vercel.json`](../frontend/vercel.json) sets `buildCommand: npm run build`, `outputDirectory: dist`, and an SPA rewrite (`/(.*)` → `/index.html`) so client-side routes don't 404 on refresh. Vercel serves the static build directly — the `frontend/Dockerfile` and `frontend/nginx.conf` are for the Docker Compose path and are **not** used on Vercel.
+
+**Env var to set in the Vercel project** (Settings → Environment Variables):
+
+| Variable | When | Value |
+|---|---|---|
+| `VITE_API_BASE_URL` | **Build time** | The Render backend URL, e.g. `https://contextiq-backend.onrender.com` |
+
+`VITE_API_BASE_URL` is compiled into the JS bundle at build time (`services/api.js:3`). Changing it requires a **rebuild/redeploy on Vercel**, not just a restart — a redeploy that reuses the existing build output will not pick up a new value.
+
+### 6.3 Cross-cutting (still open)
+
+- [ ] CI (lint + `pytest backend/tests/`) — none exists ([08 — Roadmap](08-ROADMAP.md) N5).
+- [ ] Upload size cap + `file.filename` sanitization before public exposure ([13 — Security](13-SECURITY.md) S7/S8).
+- TLS is terminated by Render and Vercel at their edges (both serve HTTPS by default).
+
+### 6.4 The `FRONTEND_ORIGIN` ↔ Vercel-origin ↔ CORS ordering problem
+
+CORS on the backend allows exactly one origin, `FRONTEND_ORIGIN` (`main.py:29,37-43`), and the frontend needs the backend URL baked in at build time (`VITE_API_BASE_URL`). The Vercel production URL is **not known until the frontend's first deploy**, which creates a chicken-and-egg. Resolve it in two passes:
+
+**Pass 1 — backend first**
+1. Deploy the backend on Render. Note its URL, e.g. `https://contextiq-backend.onrender.com`.
+2. Leave `FRONTEND_ORIGIN` at a placeholder for now (the frontend won't pass CORS yet — expected).
+
+**Pass 2 — frontend, then close the loop**
+3. Deploy the frontend on Vercel with `VITE_API_BASE_URL` set to the backend URL from step 1. Note the resulting Vercel origin, e.g. `https://contextiq.vercel.app`.
+4. Set `FRONTEND_ORIGIN` on Render to that Vercel origin and let the backend restart (an env change triggers a restart). CORS now admits the frontend.
+
+**On later changes:** if the backend URL changes, you must **rebuild the frontend** (build-time `VITE_API_BASE_URL`), not just redeploy. If the frontend origin changes (e.g. a custom domain), update `FRONTEND_ORIGIN` on Render.
+
+### 6.5 Data persistence — known limitation
+
+Render free web services **cannot attach a persistent disk**, so this deployment runs without one (accepted trade-off):
+
+- **Ephemeral filesystem.** Everything under `/app/data` — per-user FAISS indexes (`index.faiss`/`index.pkl`), BM25 `chunks.pkl`, and raw uploaded files — lives on the container's writable layer.
+- **Redeploy/restart wipe.** That layer is reset on every deploy and on every restart or instance replacement. Uploaded documents and their indexes do not survive; users must re-upload.
+- **Free Postgres expiry.** Accounts, conversations, messages, and saved DB connections persist in the free Render Postgres, but free Postgres instances are time-limited and are removed by Render after their expiry window — treat that data as disposable too.
+- **The fix** is object storage (S3 or equivalent) for uploads and indexes, tracked as the top near-term item ([08 — Roadmap](08-ROADMAP.md) N0). The in-app [`DemoBanner`](../frontend/src/components/DemoBanner.jsx) states this limitation to users.
 
 ## 7. Pre-deployment checklist
 
 1. [ ] **Rotate the leaked secrets** (`SECRET_KEY`, `DB_ENCRYPTION_KEY`, `GROQ_API_KEY`) committed in `.env.example`, and replace them with placeholders. **Blocking — do this first** ([13 — Security](13-SECURITY.md) S1).
 2. [ ] Remove the insecure `SECRET_KEY` fallback default.
-3. [ ] Alembic migrations in place; schema matches.
-4. [ ] Managed Postgres provisioned; `DATABASE_URL` set.
-5. [ ] Persistent volume for `backend/data/` attached.
-6. [ ] All env vars set (§6.1 checklist).
-7. [ ] `FRONTEND_ORIGIN` and `VITE_API_BASE_URL` set to deployed origins.
-8. [ ] `/health` and `/healthz` return OK.
-9. [ ] Upload size cap + filename sanitization added.
-10. [ ] CI green on `pytest backend/tests/`.
+3. [ ] Render Blueprint applied; free Postgres provisioned; `DATABASE_URL` wired from it (not SQLite).
+4. [ ] Backend env vars set in the Render dashboard (§6.1 table).
+5. [ ] Frontend deployed on Vercel with build-time `VITE_API_BASE_URL` (§6.2).
+6. [ ] Two-pass origin wiring done: `FRONTEND_ORIGIN` set to the Vercel origin and backend restarted (§6.4).
+7. [ ] `/health` (backend) returns OK; the SPA loads and can call the API without CORS errors.
+8. [ ] Users informed of the ephemeral-data limitation (the in-app `DemoBanner` covers this) (§6.5).
+9. [ ] (Follow-up) CI green on `pytest backend/tests/`; upload size cap + filename sanitization added.
 
 ---
 

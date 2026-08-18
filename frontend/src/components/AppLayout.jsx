@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 
 import { AppDataProvider } from "../context/AppDataContext.jsx";
+import DemoBanner from "./DemoBanner.jsx";
 import Logo from "./Logo.jsx";
 import Sidebar from "./Sidebar.jsx";
 
@@ -52,6 +53,8 @@ export default function AppLayout() {
         </AnimatePresence>
 
         <div className="flex flex-1 flex-col overflow-hidden">
+          <DemoBanner />
+
           <div className="flex items-center gap-3 border-b border-border px-4 py-3 md:hidden">
             <button
               type="button"
