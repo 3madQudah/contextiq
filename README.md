@@ -2,6 +2,13 @@
 
 A per-user RAG system: upload your own documents (PDF, DOCX, CSV, TXT, Markdown) and ask questions with answers grounded in and cited back to the source file — plus connect an external SQL database and query it in plain English, read-only.
 
+## Live Demo
+
+- App: https://contextiq-rho.vercel.app
+- API health check: https://contextiq-backend-zv0w.onrender.com/health
+
+> Free-tier hosting: the backend spins down after 15 minutes of inactivity (first request after idle can take ~30-60s to wake it up), uploaded documents and their FAISS indexes are cleared on every redeploy, and the free Postgres database expires 30 days after creation. This is a demo deployment, not a production one — see [docs/14-DEPLOYMENT.md](docs/14-DEPLOYMENT.md) for the full trade-off discussion.
+
 ## What problem it solves
 
 Two failure modes of naive retrieval-augmented generation:

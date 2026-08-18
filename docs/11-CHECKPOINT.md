@@ -1,6 +1,6 @@
 # 11 — Checkpoint
 
-Snapshot date: **2026-08-17**. Source of truth: [PROJECT-AUDIT.md](PROJECT-AUDIT.md) §10, §12, §14.
+Snapshot date: **2026-08-18**. Source of truth: [PROJECT-AUDIT.md](PROJECT-AUDIT.md) §10, §12, §14.
 
 Related: [07 — Implementation Plan](07-IMPLEMENTATION-PLAN.md) · [08 — Roadmap](08-ROADMAP.md)
 
@@ -8,13 +8,31 @@ Related: [07 — Implementation Plan](07-IMPLEMENTATION-PLAN.md) · [08 — Road
 
 ## Git status
 
-- Branch: `main`.
-- Working tree: **not clean** — 27 modified tracked files + 21 untracked new paths, uncommitted (audit §12).
-- Committed history: two commits — `afa0d94` (2026-08-05, "first commit"), `f4d5b34` (2026-08-08, hybrid eval / per-type prompts / compute paths / docs).
+- Branch: `main`, up to date with `origin/main`.
+- Working tree: **clean** — this checkpoint update (alongside the README live-demo links) is the pending commit.
+- Committed history: five commits — `afa0d94` (2026-08-05, "first commit"), `f4d5b34` (2026-08-08, hybrid eval / per-type prompts / compute paths / docs), `9a66a45` (security hardening, Docker stack, landing pages, full docs), `6de41d6` (CPU-only torch build for the Render free-tier memory limit), `b820eec` (Render + Vercel config, dynamic PORT, demo banner, deployment docs).
 
 ## Test status
 
-- `pytest backend/tests/` → **58 passed** (verified this session, ~17s, under Python 3.13.9). Zero failures/skips (audit §10).
+- `pytest backend/tests/` → **58 passed** (re-verified 2026-08-18, ~19.8s, under Python 3.13.9). Zero failures/skips.
+
+## Deployment status
+
+Live and verified, not just documented:
+
+- Backend live on Render (free tier), Postgres attached, CPU-only torch build to fit the 512MB memory limit (idle usage measured at ~417MB before deploy).
+- Frontend live on Vercel, wired to the Render backend via `VITE_API_BASE_URL`.
+- `FRONTEND_ORIGIN` on Render updated to the real Vercel origin — CORS confirmed working.
+- End-to-end smoke test passed: registered a real account, uploaded a real PDF, asked a real question, got a real answer with citations.
+- Demo banner live on the deployed frontend, matching the design system.
+
+Known accepted limitations of this free-tier deployment:
+
+- Ephemeral filesystem — uploads and their FAISS indexes are wiped on every redeploy.
+- Free Postgres instance expires 30 days after creation.
+- Cold start after 15 minutes of inactivity (~30–60s to wake).
+
+Live URLs: see the README's [Live Demo](../README.md#live-demo) section.
 
 ## What works (verified)
 
@@ -37,13 +55,12 @@ From audit §14.2:
 - LLM conversation titles — client-side heuristic.
 - `rewritten_query` — not persisted.
 - MariaDB statement timeout — silently ignored.
-- Deployment — Planned, not implemented (audit §14.4).
+- Persistent-disk / no-cold-start hosting — current deployment is Render free tier (see Deployment status above); moving to a paid plan or external object storage is a next action below.
 
 ## What is blocked and why
 
 | Blocked | Blocking reason |
 |---|---|
-| Public deployment | Leaked committed secrets must be rotated first (audit §7.10, §14.3); no migrations or hosting config exist (§14.4). |
 | Managed-DB schema evolution | No Alembic; `create_all` cannot alter existing tables (§6.3). |
 | CI gating | No CI configured (§14.4). |
 
@@ -54,9 +71,9 @@ From audit §14.2:
 
 ## Exact next three actions
 
-1. **Rotate** the leaked `SECRET_KEY`, `DB_ENCRYPTION_KEY`, and `GROQ_API_KEY` values and replace `.env.example` entries with placeholders; remove the insecure `SECRET_KEY` fallback default.
-2. **Commit** the working tree (rate limiter, security/SQL tests, Docker stack, marketing frontend) so the tree is clean and the changelog Unreleased section can be cut.
-3. **Introduce Alembic** and generate an initial migration matching the current schema, ahead of any managed-Postgres deployment.
+1. **Set a calendar reminder** to recreate the Postgres instance before it expires (~30 days from 2026-08-18) and update `DATABASE_URL` on Render.
+2. **Decide** whether to move to Render Starter ($7/mo) for persistent disk + no cold starts, or migrate uploads/indexes to S3 (per [08 — Roadmap](08-ROADMAP.md)).
+3. **Add the live demo link** to CV / LinkedIn / GitHub profile README.
 
 ---
 
